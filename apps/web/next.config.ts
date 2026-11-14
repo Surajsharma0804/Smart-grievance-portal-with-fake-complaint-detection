@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         destination: `${apiUrl}/:path*`,
       },
       {
+        source: '/staff',
+        destination: '/staff/index.html',
+      },
+      {
         source: '/staff/:path*',
         destination: '/staff/index.html',
       },

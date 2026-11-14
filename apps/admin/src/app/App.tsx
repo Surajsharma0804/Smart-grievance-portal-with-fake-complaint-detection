@@ -99,8 +99,13 @@ function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (user) navigate('/staff/queue', { replace: true });
+    if (user) navigate('/queue', { replace: true });
   }, [user, navigate]);
+
+  const autofill = (e: string) => {
+    setEmail(e);
+    setPassword('password123');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,6 +128,38 @@ function LoginPage() {
             {error}
           </div>
         )}
+
+        {/* 1-Click Role Login for verification */}
+        <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-2">
+          <p className="font-semibold text-slate-700">Quick sign-in credentials:</p>
+          <div className="grid grid-cols-1 gap-1.5">
+            <button
+              type="button"
+              onClick={() => autofill('officer@test.com')}
+              className="p-1.5 text-left bg-white border border-slate-200 rounded hover:border-blue-400 hover:bg-blue-50 transition-colors flex justify-between"
+            >
+              <span className="font-medium text-slate-800">Ward Officer</span>
+              <span className="text-slate-400">officer@test.com</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => autofill('admin@test.com')}
+              className="p-1.5 text-left bg-white border border-slate-200 rounded hover:border-blue-400 hover:bg-blue-50 transition-colors flex justify-between"
+            >
+              <span className="font-medium text-slate-800">Dept Admin</span>
+              <span className="text-slate-400">admin@test.com</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => autofill('reviewer@test.com')}
+              className="p-1.5 text-left bg-white border border-slate-200 rounded hover:border-blue-400 hover:bg-blue-50 transition-colors flex justify-between"
+            >
+              <span className="font-medium text-slate-800">Reviewer</span>
+              <span className="text-slate-400">reviewer@test.com</span>
+            </button>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
@@ -172,7 +209,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
       </div>
     );
   }
-  if (!user) return <Navigate to="/staff/login" replace />;
+  if (!user) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 
@@ -183,15 +220,15 @@ function DashboardLayout() {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/staff/login');
+    navigate('/login');
   };
 
   const NAV = [
-    { to: '/staff/queue', label: 'Officer Queue', icon: '📋' },
-    { to: '/staff/review', label: 'Review Workbench', icon: '🔍' },
-    { to: '/staff/analytics', label: 'Analytics', icon: '📊' },
-    { to: '/staff/admin/departments', label: 'Departments', icon: '🏛️' },
-    { to: '/staff/admin/users', label: 'User Directory', icon: '👥' },
+    { to: '/queue', label: 'Officer Queue', icon: '📋' },
+    { to: '/review', label: 'Review Workbench', icon: '🔍' },
+    { to: '/analytics', label: 'Analytics', icon: '📊' },
+    { to: '/admin/departments', label: 'Departments', icon: '🏛️' },
+    { to: '/admin/users', label: 'User Directory', icon: '👥' },
   ];
 
   return (
@@ -629,6 +666,8 @@ export function App() {
       <AuthProvider>
         <Routes>
           <Route path="login" element={<LoginPage />} />
+          <Route path="staff/login" element={<Navigate to="/login" replace />} />
+          <Route path="staff/*" element={<Navigate to="/login" replace />} />
           <Route
             path="/*"
             element={

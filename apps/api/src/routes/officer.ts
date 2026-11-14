@@ -29,26 +29,29 @@ officerRouter.get('/officer/queue', ...officerAuth, async (req: Request, res: Re
   const query: Record<string, unknown> = {
     status: {
       $in: [
+        ComplaintStatus.SUBMITTED,
+        ComplaintStatus.ROUTED,
         ComplaintStatus.ASSIGNED,
         ComplaintStatus.IN_PROGRESS,
-        ComplaintStatus.ROUTED,
         ComplaintStatus.REOPENED,
+        ComplaintStatus.NEEDS_REVIEW,
       ],
     },
   };
 
-  // If officer (not dept admin), filter by their assigneeId or department
+  // If officer (not dept admin), filter by their assigneeId or unassigned
   if (userRole === Role.OFFICER) {
     query['$or'] = [
       { assigneeId: userId },
       { assigneeId: { $exists: false } },
+      { assigneeId: null },
     ];
   }
 
   const complaints = await Complaint.find(query)
     .populate('wardId', 'name code')
     .populate('departmentId', 'name code')
-    .sort({ priority: -1, slaDueAt: 1 })
+    .sort({ createdAt: -1 })
     .limit(100);
 
   res.json({ complaints });

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PROTECTED = ['/my', '/report', '/track'];
+const PROTECTED = ['/my', '/report', '/saved-areas'];
 const AUTH_PAGES = ['/login', '/register'];
 
 export function middleware(request: NextRequest) {
@@ -23,5 +23,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/my/:path*', '/report/:path*', '/track/:path*', '/login', '/register'],
+  matcher: ['/my/:path*', '/report/:path*', '/saved-areas/:path*', '/login', '/register'],
 };

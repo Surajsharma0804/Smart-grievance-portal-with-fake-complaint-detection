@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7.0
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=nagrik-setu
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - MONGO_URI=mongodb://mongo:27017/nagrik-setu
+      - REDIS_URL=redis://redis:6379
+      - CLIENT_ORIGIN=http://localhost:3000
+      - API_BASE_URL=http://api:4000
+      - JWT_ACCESS_SECRET=prod-access-secret-nagrik-setu-2026-secure
+      - JWT_REFRESH_SECRET=prod-refresh-secret-nagrik-setu-2026-secure
+      - SESSION_VERIFY_SECRET=prod-session-secret-nagrik-setu-2026-secure
+      - SSE_TICKET_SECRET=prod-sse-ticket-secret-nagrik-setu-2026-secure
+      - STORAGE_DRIVER=local
+      - STORAGE_PATH=/app/uploads
+      - AI_PROVIDER=mock
+      - EMBEDDING_PROVIDER=mock
+      - RUN_WORKER=false
+    volumes:
+      - uploads-data:/app/uploads
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - API_BASE_URL=http://api:4000
+      - MONGO_URI=mongodb://mongo:27017/nagrik-setu
+    depends_on:
+      - api
+
+volumes:
+  mongo-data:
+  redis-data:
+  uploads-data:

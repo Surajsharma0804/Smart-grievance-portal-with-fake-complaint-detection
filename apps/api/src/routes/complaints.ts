@@ -12,11 +12,12 @@ import {
   toOwnerDTO,
   type IComplaint,
 } from '@nagrik-setu/domain';
-import { parseCookies, requireAuth } from '../middleware/auth';
+import { parseCookies, requireAuth, optionalAuth } from '../middleware/auth';
 
 export const complaintRouter = Router();
 
 const auth = [parseCookies, requireAuth] as const;
+const optAuth = [parseCookies, optionalAuth] as const;
 
 complaintRouter.post('/complaints', ...auth, async (req: Request, res: Response) => {
   const input = complaintCreateSchema.parse(req.body);
@@ -46,14 +47,14 @@ complaintRouter.get('/complaints/mine', ...auth, async (req: Request, res: Respo
   });
 });
 
-complaintRouter.get('/complaints/:publicId', ...auth, async (req: Request, res: Response) => {
+complaintRouter.get('/complaints/:publicId', ...optAuth, async (req: Request, res: Response) => {
   const complaint = await Complaint.findOne({ publicId: req.params.publicId });
   if (!complaint) {
     res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Complaint not found' } });
     return;
   }
 
-  const isOwner = complaint.reporterId.toString() === req.user!.sub;
+  const isOwner = req.user ? complaint.reporterId.toString() === req.user.sub : false;
   if (isOwner) {
     res.json({ complaint: toOwnerDTO(complaint) });
     return;
@@ -61,7 +62,7 @@ complaintRouter.get('/complaints/:publicId', ...auth, async (req: Request, res: 
   res.json({ complaint: toPublicDTO(complaint) });
 });
 
-complaintRouter.get('/complaints/nearby', ...auth, async (req: Request, res: Response) => {
+complaintRouter.get('/complaints/nearby', ...optAuth, async (req: Request, res: Response) => {
   const lng = Number(req.query.lng);
   const lat = Number(req.query.lat);
   const radiusM = Math.min(5000, Math.max(100, Number(req.query.radius) || 1000));

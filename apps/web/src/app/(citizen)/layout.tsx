@@ -13,6 +13,14 @@ export default async function CitizenLayout({ children }: { children: React.Reac
           <Link href="/report" className="hover:underline font-medium text-blue-600">Report</Link>
           <Link href="/nearby" className="hover:underline">Nearby</Link>
           <Link href="/saved-areas" className="hover:underline">Saved areas</Link>
+          {session && ['OFFICER', 'DEPT_ADMIN', 'REVIEWER'].includes(session.user.role) && (
+            <Link
+              href="/staff"
+              className="text-xs text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded font-medium border border-blue-200"
+            >
+              Staff Console
+            </Link>
+          )}
           {session && (
             <form action={logoutAction}>
               <button type="submit" className="text-gray-500 hover:text-gray-700">

@@ -185,6 +185,32 @@ npm run build
 
 ---
 
+## Production Deployment
+
+Detailed step-by-step instructions for deploying to cloud providers and Docker VPS are in **[docs/deployment.md](docs/deployment.md)**.
+
+### Quick Start with Docker Compose (Production Stack)
+
+Deploy MongoDB, Redis, API, and Next.js Web with a single command:
+
+```bash
+# 1. Copy environment configuration
+cp .env.example .env
+
+# 2. Build and launch all production containers in background
+docker compose -f docker-compose.prod.yml up -d --build
+
+# 3. Access applications:
+#    Citizen Web Portal & Staff Console: http://localhost:3000 (or http://<YOUR_IP>:3000)
+#    Backend REST API:                  http://localhost:4000
+```
+
+### Cloud PaaS Deployment (Render + Vercel + MongoDB Atlas)
+- **Backend API:** Deploy to [Render.com](https://render.com) using the included `render.yaml` blueprint with MongoDB Atlas.
+- **Frontend Portal:** Import `apps/web` into [Vercel](https://vercel.com) with `API_BASE_URL` pointing to your Render API.
+
+---
+
 ## Known Limitations
 
 1. **ELA False Positives**: Recompression artifacts can vary across smartphone camera encoders and social messaging compressions; ELA output is treated strictly as an indicator for human review, never as automated proof of forgery.

@@ -39,10 +39,14 @@ interface ComplaintDetail {
 async function fetchComplaint(publicId: string): Promise<ComplaintDetail | null> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
-  if (!accessToken) return null;
+
+  const headers: Record<string, string> = {};
+  if (accessToken) {
+    headers.Cookie = `accessToken=${accessToken}`;
+  }
 
   const res = await fetch(`${API_URL}/complaints/${publicId}`, {
-    headers: { Cookie: `accessToken=${accessToken}` },
+    headers,
     cache: 'no-store',
   });
 

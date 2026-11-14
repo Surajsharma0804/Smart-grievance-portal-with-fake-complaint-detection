@@ -1,0 +1,49 @@
+services:
+  # Backend API Service
+  - type: web
+    name: nagrik-setu-api
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci && npm run build --workspace=@nagrik-setu/shared && npm run build --workspace=@nagrik-setu/domain && npm run build --workspace=@nagrik-setu/api
+    startCommand: node apps/api/dist/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false # Set in Render Dashboard with MongoDB Atlas URI
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: SESSION_VERIFY_SECRET
+        generateValue: true
+      - key: SSE_TICKET_SECRET
+        generateValue: true
+      - key: STORAGE_DRIVER
+        value: local
+      - key: AI_PROVIDER
+        value: mock
+      - key: EMBEDDING_PROVIDER
+        value: mock
+
+  # Citizen Portal & Staff Web Frontend
+  - type: web
+    name: nagrik-setu-web
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci && npm run build --workspace=@nagrik-setu/shared && npm run build --workspace=@nagrik-setu/admin && mkdir -p apps/web/public/staff && cp -r apps/admin/dist/* apps/web/public/staff/ && npm run build --workspace=@nagrik-setu/web
+    startCommand: npm run start --workspace=@nagrik-setu/web
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: nagrik-setu-api
+          property: host

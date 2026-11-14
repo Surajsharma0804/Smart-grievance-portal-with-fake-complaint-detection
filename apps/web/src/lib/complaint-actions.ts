@@ -96,7 +96,7 @@ export async function upvoteComplaintAction(
 ): Promise<{ success: boolean; upvoted?: boolean; upvotes?: number; error?: string }> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
-  if (!accessToken) return { success: false, error: 'Authentication required' };
+  if (!accessToken) return { success: false, error: 'Please sign in to upvote this complaint' };
 
   const res = await fetch(`${API_URL}/complaints/${publicId}/upvote`, {
     method: 'POST',
@@ -122,7 +122,7 @@ export async function reopenComplaintAction(
 ): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
-  if (!accessToken) return { success: false, error: 'Authentication required' };
+  if (!accessToken) return { success: false, error: 'Please sign in to reopen this complaint' };
 
   const res = await fetch(`${API_URL}/complaints/${publicId}/reopen`, {
     method: 'POST',
@@ -149,7 +149,7 @@ export async function submitFeedbackAction(
 ): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
-  if (!accessToken) return { success: false, error: 'Authentication required' };
+  if (!accessToken) return { success: false, error: 'Please sign in to submit feedback' };
 
   const res = await fetch(`${API_URL}/complaints/${publicId}/feedback`, {
     method: 'POST',
@@ -175,7 +175,7 @@ export async function appealComplaintAction(
 ): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
-  if (!accessToken) return { success: false, error: 'Authentication required' };
+  if (!accessToken) return { success: false, error: 'Please sign in to submit an appeal' };
 
   const res = await fetch(`${API_URL}/complaints/${publicId}/appeal`, {
     method: 'POST',

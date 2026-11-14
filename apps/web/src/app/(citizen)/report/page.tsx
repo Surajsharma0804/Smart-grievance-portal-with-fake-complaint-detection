@@ -299,19 +299,35 @@ export default function ReportPage() {
 
         {/* Location */}
         <div>
-          <label className="block text-sm font-medium mb-1">Location</label>
+          <label className="block text-sm font-medium mb-1">Grievance Location <span className="text-red-500">*</span></label>
           {location ? (
-            <p className="text-sm text-green-700 bg-green-50 p-2 rounded">
-              Lat: {location.lat.toFixed(6)}, Lng: {location.lng.toFixed(6)}
-            </p>
+            <div className="flex items-center justify-between text-sm text-green-700 bg-green-50 p-2.5 rounded-lg border border-green-200">
+              <span>📍 Pinned: Lat {location.lat.toFixed(5)}, Lng {location.lng.toFixed(5)}</span>
+              <button
+                type="button"
+                onClick={() => setLocation(null)}
+                className="text-xs text-gray-500 hover:text-red-600 underline font-medium"
+              >
+                Reset
+              </button>
+            </div>
           ) : (
-            <button
-              type="button"
-              onClick={requestLocation}
-              className="px-4 py-2 border rounded-lg text-sm hover:bg-gray-50"
-            >
-              Use my current location
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={requestLocation}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 font-medium text-gray-700"
+              >
+                📡 Use current GPS location
+              </button>
+              <button
+                type="button"
+                onClick={() => setLocation({ lat: 30.7333, lng: 76.7794 })}
+                className="px-3 py-2 text-xs border border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                📍 Quick pin: Sector 17 (Chandigarh)
+              </button>
+            </div>
           )}
           {geoError && (
             <p className="text-sm text-red-600 mt-1">{geoError}</p>

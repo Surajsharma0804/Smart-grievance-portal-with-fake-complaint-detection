@@ -1,0 +1,42 @@
+# Production Dockerfile for Nagrik Setu Web Portal & Staff Console
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy monorepo manifests
+COPY package*.json ./
+COPY packages/shared/package*.json ./packages/shared/
+COPY apps/admin/package*.json ./apps/admin/
+COPY apps/web/package*.json ./apps/web/
+
+# Install dependencies
+RUN npm ci
+
+# Copy sources
+COPY tsconfig.json ./
+COPY packages/shared ./packages/shared
+COPY apps/admin ./apps/admin
+COPY apps/web ./apps/web
+
+# Build shared, staff admin SPA, and Next.js portal
+RUN npm run build --workspace=@nagrik-setu/shared
+RUN npm run build --workspace=@nagrik-setu/admin
+RUN mkdir -p apps/web/public/staff && cp -r apps/admin/dist/* apps/web/public/staff/
+RUN npm run build --workspace=@nagrik-setu/web
+
+# Production Runner Stage
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/shared ./packages/shared
+COPY --from=builder /app/apps/web ./apps/web
+
+WORKDIR /app/apps/web
+EXPOSE 3000
+
+CMD ["npm", "run", "start"]

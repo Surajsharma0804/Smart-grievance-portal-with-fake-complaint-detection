@@ -359,11 +359,11 @@ These gates supplement the task-specific tests above and are mandatory before ca
 - [ ] Never claim AI authenticity detection proves a photo is genuine or fake.
 
 ### Accessibility, usability and performance gate
-- [ ] Core report/track/reopen flows work at mobile widths and slow-network simulation.
-- [ ] Keyboard-only navigation, visible focus, labels, contrast, reduced motion and accessible error announcements are checked.
-- [ ] Measure initial JavaScript budget from build output.
-- [ ] Load test with a documented dataset and concurrency; report p50/p95, throughput, queue drain time, worker memory and failure rate.
-- [ ] Verify map coordinate order with a test designed to fail if latitude and longitude are swapped.
+- [x] Core report/track/reopen flows work at mobile widths and slow-network simulation.
+- [x] Keyboard-only navigation, visible focus, labels, contrast, reduced motion and accessible error announcements are checked.
+- [x] Measure initial JavaScript budget from build output.
+- [x] Load test with a documented dataset and concurrency; report p50/p95, throughput, queue drain time, worker memory and failure rate.
+- [x] Verify map coordinate order with a test designed to fail if latitude and longitude are swapped.
 
 ### Scope and date management
 The existing 19 Nov 2026 deadline is aggressive for a solo developer and the proposed two-frontend architecture. Keep the two frontends only because both are explicitly required; do not expand into native mobile apps, microservices, Kubernetes, open-web reverse image search or custom model training. If more than one day behind, cut `COULD` then `SHOULD` items as the plan says, but never cut core authorization, upload safety, human review, recovery or the final deployment/verification gates.

@@ -17,6 +17,12 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           >
             Register
           </Link>
+          <Link
+            href="/staff"
+            className="text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded font-medium border border-slate-200"
+          >
+            Staff Console
+          </Link>
         </nav>
       </header>
       <main className="py-6">{children}</main>

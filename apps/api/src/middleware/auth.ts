@@ -27,6 +27,19 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction) {
   next();
 }
 
+/** Optional auth: attaches `req.user` if valid access token is present, else continues. */
+export function optionalAuth(req: Request, _res: Response, next: NextFunction) {
+  const token = req.cookies?.accessToken;
+  if (token) {
+    try {
+      req.user = authService.verifyAccess(token, getConfig().JWT_ACCESS_SECRET);
+    } catch {
+      // Ignore invalid token and continue as guest
+    }
+  }
+  next();
+}
+
 /** Restrict to specific roles. Must be used after requireAuth. */
 export function requireRole(...roles: Role[]) {
   return (req: Request, _res: Response, next: NextFunction) => {

@@ -9,6 +9,10 @@ import { ZodError } from 'zod';
 import { healthRouter } from './routes/health';
 import { authRouter } from './routes/auth';
 import { complaintRouter } from './routes/complaints';
+import { mediaRouter } from './routes/media';
+import { adminRouter } from './routes/admin';
+import { officerRouter } from './routes/officer';
+import { reviewRouter } from './routes/review';
 
 const logger = pino({ level: 'info' });
 
@@ -37,6 +41,10 @@ export function createApp(options: { clientOrigin: string; logLevel?: string }) 
   app.use('/', healthRouter);
   app.use('/', authRouter);
   app.use('/', complaintRouter);
+  app.use('/', mediaRouter);
+  app.use('/', adminRouter);
+  app.use('/', officerRouter);
+  app.use('/', reviewRouter);
 
   // 404 for unmatched routes
   app.use((_req: Request, _res: Response, next: NextFunction) => {

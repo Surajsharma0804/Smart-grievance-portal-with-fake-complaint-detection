@@ -22,8 +22,10 @@
     "@nagrik-setu/shared": "*",
     "argon2": "^0.45.2",
     "cookie-parser": "^1.4.7",
+    "exifr": "^7.1.3",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.8.0",
+    "sharp": "^0.35.5",
     "zod": "^3.23.0"
   },
   "devDependencies": {

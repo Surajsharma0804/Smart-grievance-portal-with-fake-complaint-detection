@@ -1,7 +1,11 @@
 'use client';
 
 import { useActionState, useState } from 'react';
-import { submitComplaintAction, type ReportState } from '@/lib/complaint-actions';
+import {
+  submitComplaintAction,
+  getPresignedUploadUrlsAction,
+  type ReportState,
+} from '@/lib/complaint-actions';
 
 const CATEGORIES = [
   { value: 'SANITATION', label: 'Sanitation' },
@@ -17,6 +21,15 @@ const CATEGORIES = [
   { value: 'OTHER', label: 'Other' },
 ];
 
+interface UploadItem {
+  id: string;
+  name: string;
+  previewUrl: string;
+  key?: string;
+  status: 'uploading' | 'done' | 'error';
+  error?: string;
+}
+
 const initial: ReportState = {};
 
 export default function ReportPage() {
@@ -24,6 +37,8 @@ export default function ReportPage() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [geoError, setGeoError] = useState<string | null>(null);
   const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const [uploads, setUploads] = useState<UploadItem[]>([]);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   function requestLocation() {
     setGeoError(null);
@@ -51,11 +66,104 @@ export default function ReportPage() {
     );
   }
 
+  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    setUploadError(null);
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    if (uploads.length + files.length > 4) {
+      setUploadError('Maximum 4 photos allowed per complaint.');
+      return;
+    }
+
+    const newItems: UploadItem[] = files.map((f) => ({
+      id: crypto.randomUUID(),
+      name: f.name,
+      previewUrl: URL.createObjectURL(f),
+      status: 'uploading',
+    }));
+
+    setUploads((prev) => [...prev, ...newItems]);
+
+    // Request presigned URLs
+    const presignReq = files.map((f) => ({
+      contentType: f.type || 'image/jpeg',
+      fileSize: f.size,
+    }));
+
+    const res = await getPresignedUploadUrlsAction(presignReq);
+    if (res.error || !res.uploads) {
+      setUploadError(res.error || 'Failed to initialize uploads');
+      setUploads((prev) =>
+        prev.map((item) =>
+          newItems.some((n) => n.id === item.id)
+            ? { ...item, status: 'error', error: res.error || 'Upload error' }
+            : item,
+        ),
+      );
+      return;
+    }
+
+    // Upload each file directly to the presigned URL
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]!;
+      const item = newItems[i]!;
+      const presigned = res.uploads[i]!;
+
+      try {
+        const uploadRes = await fetch(presigned.url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': file.type || 'image/jpeg',
+          },
+          body: file,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error(`Upload failed (${uploadRes.status})`);
+        }
+
+        setUploads((prev) =>
+          prev.map((it) =>
+            it.id === item.id
+              ? { ...it, key: presigned.key, status: 'done' }
+              : it,
+          ),
+        );
+      } catch (err: unknown) {
+        setUploads((prev) =>
+          prev.map((it) =>
+            it.id === item.id
+              ? {
+                  ...it,
+                  status: 'error',
+                  error: err instanceof Error ? err.message : 'Upload error',
+                }
+              : it,
+          ),
+        );
+      }
+    }
+  }
+
+  function handleRemoveUpload(id: string) {
+    setUploads((prev) => {
+      const item = prev.find((it) => it.id === id);
+      if (item?.previewUrl) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+      return prev.filter((it) => it.id !== id);
+    });
+  }
+
+  const completedKeys = uploads.filter((u) => u.status === 'done' && u.key).map((u) => u.key!);
+  const isUploading = uploads.some((u) => u.status === 'uploading');
+
   return (
     <div className="max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold mb-2">Report a civic issue</h2>
       <p className="text-gray-600 mb-6">
-        Describe the problem and add your location. We will route it to the right department.
+        Describe the problem, attach evidence photos, and provide your location. We will route it to the right department.
       </p>
 
       {state.error && (
@@ -68,6 +176,7 @@ export default function ReportPage() {
         <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
         <input type="hidden" name="lng" value={location?.lng ?? ''} />
         <input type="hidden" name="lat" value={location?.lat ?? ''} />
+        <input type="hidden" name="mediaKeys" value={completedKeys.join(',')} />
 
         <div>
           <label htmlFor="title" className="block text-sm font-medium mb-1">
@@ -81,7 +190,7 @@ export default function ReportPage() {
             minLength={5}
             maxLength={200}
             placeholder="Broken streetlight near sector 17 market"
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
           />
           {state.fieldErrors?.title && (
             <p className="text-sm text-red-600 mt-1">{state.fieldErrors.title}</p>
@@ -98,7 +207,7 @@ export default function ReportPage() {
             rows={4}
             maxLength={2000}
             placeholder="Add details about the problem..."
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
           />
         </div>
 
@@ -109,13 +218,79 @@ export default function ReportPage() {
           <select
             id="citizenCategory"
             name="citizenCategory"
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
           >
             <option value="">Select a category</option>
             {CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>{c.label}</option>
             ))}
           </select>
+        </div>
+
+        {/* Media Photo Upload */}
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Evidence Photos (1 to 4 images)
+          </label>
+          <p className="text-xs text-gray-500 mb-2">
+            Accepted formats: JPEG, PNG, WebP (max 10MB each).
+          </p>
+
+          {uploads.length < 4 && (
+            <div className="mb-3">
+              <label className="inline-block cursor-pointer px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 font-medium">
+                Choose photos
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          )}
+
+          {uploadError && (
+            <p className="text-sm text-red-600 mb-2">{uploadError}</p>
+          )}
+
+          {uploads.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {uploads.map((item) => (
+                <div key={item.id} className="relative border rounded-lg overflow-hidden bg-gray-50 p-1">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.previewUrl}
+                    alt={item.name}
+                    className="w-full h-24 object-cover rounded"
+                  />
+                  <div className="mt-1 flex items-center justify-between text-xs px-1">
+                    {item.status === 'uploading' && (
+                      <span className="text-blue-600 font-medium">Uploading...</span>
+                    )}
+                    {item.status === 'done' && (
+                      <span className="text-green-600 font-medium">Ready</span>
+                    )}
+                    {item.status === 'error' && (
+                      <span className="text-red-600 font-medium" title={item.error}>Failed</span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveUpload(item.id)}
+                      className="text-gray-400 hover:text-red-600 font-bold"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {state.fieldErrors?.mediaKeys && (
+            <p className="text-sm text-red-600 mt-1">{state.fieldErrors.mediaKeys}</p>
+          )}
         </div>
 
         {/* Location */}
@@ -151,10 +326,10 @@ export default function ReportPage() {
 
         <button
           type="submit"
-          disabled={pending || !location}
+          disabled={pending || isUploading || !location}
           className="w-full py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
         >
-          {pending ? 'Submitting...' : 'Submit complaint'}
+          {pending ? 'Submitting...' : isUploading ? 'Uploading photos...' : 'Submit complaint'}
         </button>
       </form>
     </div>

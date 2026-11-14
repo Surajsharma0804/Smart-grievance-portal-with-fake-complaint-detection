@@ -11,6 +11,32 @@ export interface ReportState {
   fieldErrors?: Record<string, string>;
 }
 
+export async function getPresignedUploadUrlsAction(
+  files: Array<{ contentType: string; fileSize: number }>,
+): Promise<{ uploads?: Array<{ url: string; key: string; expiresAt: string }>; error?: string }> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+  if (!accessToken) {
+    return { error: 'Authentication required' };
+  }
+
+  const res = await fetch(`${API_URL}/uploads/presign`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: `accessToken=${accessToken}`,
+    },
+    body: JSON.stringify({ files }),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    return { error: body?.error?.message || 'Failed to get upload presigned URLs' };
+  }
+
+  return res.json();
+}
+
 export async function submitComplaintAction(
   _prev: ReportState,
   formData: FormData,

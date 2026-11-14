@@ -1,0 +1,17 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@nagrik-setu/domain",
+            "importNames": ["createComplaint", "transition", "seed", "linkToCluster", "splitFromCluster"],
+            "message": "Direct mutation of complaint domain from web app is prohibited. Use the Express API instead."
+          }
+        ]
+      }
+    ]
+  }
+}

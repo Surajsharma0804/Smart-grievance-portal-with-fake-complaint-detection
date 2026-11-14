@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function HomePage() {
   return (
-    <div className="space-y-16">
+    <div className="space-y-16" suppressHydrationWarning>
       <section className="text-center py-20">
         <h2 className="text-4xl font-bold mb-4 tracking-tight">
           Report civic issues. Get them resolved.
@@ -11,7 +11,7 @@ export default function HomePage() {
           Submit complaints with photos and location, track progress in real time,
           and see issues in your area being addressed.
         </p>
-        <div className="mt-8 flex justify-center gap-4">
+        <div className="mt-8 flex justify-center gap-4" suppressHydrationWarning>
           <Link
             href="/report"
             className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"

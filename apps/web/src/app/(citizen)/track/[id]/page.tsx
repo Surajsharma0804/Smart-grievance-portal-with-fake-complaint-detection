@@ -153,15 +153,15 @@ export default async function TrackPage({ params }: TrackPageProps) {
             </>
           )}
           <dt className="text-gray-500">Submitted</dt>
-          <dd>{new Date(complaint.createdAt).toLocaleString('en-IN')}</dd>
+          <dd suppressHydrationWarning>{new Date(complaint.createdAt).toLocaleString('en-IN')}</dd>
           <dt className="text-gray-500">Last updated</dt>
-          <dd>{new Date(complaint.updatedAt).toLocaleString('en-IN')}</dd>
+          <dd suppressHydrationWarning>{new Date(complaint.updatedAt).toLocaleString('en-IN')}</dd>
           <dt className="text-gray-500">Upvotes</dt>
           <dd>{complaint.upvotes}</dd>
           {complaint.slaDueAt && (
             <>
               <dt className="text-gray-500">SLA due</dt>
-              <dd>{new Date(complaint.slaDueAt).toLocaleString('en-IN')}</dd>
+              <dd suppressHydrationWarning>{new Date(complaint.slaDueAt).toLocaleString('en-IN')}</dd>
             </>
           )}
         </dl>
@@ -183,7 +183,7 @@ export default async function TrackPage({ params }: TrackPageProps) {
                 {entry.note && (
                   <p className="text-sm text-gray-600">{entry.note}</p>
                 )}
-                <time className="text-xs text-gray-400">
+                <time className="text-xs text-gray-400" suppressHydrationWarning>
                   {new Date(entry.at).toLocaleString('en-IN')}
                 </time>
               </li>

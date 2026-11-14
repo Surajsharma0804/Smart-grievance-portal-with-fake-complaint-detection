@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-7xl px-4">
+    <div className="mx-auto max-w-7xl px-4" suppressHydrationWarning>
       <header className="flex items-center justify-between py-4 border-b">
         <Link href="/" className="text-xl font-semibold">Nagrik Setu</Link>
         <nav className="flex items-center gap-4 text-sm">

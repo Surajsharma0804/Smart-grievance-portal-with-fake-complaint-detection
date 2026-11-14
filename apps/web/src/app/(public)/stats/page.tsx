@@ -33,7 +33,7 @@ export default async function StatsPage() {
         <p className="text-gray-600 mt-2">
           Transparent metrics on municipal grievance redressal, updated every 60 seconds (ISR).
         </p>
-        <span className="inline-block mt-2 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded">
+        <span className="inline-block mt-2 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded" suppressHydrationWarning>
           Last generated at: {stats.generatedAt} IST
         </span>
       </div>

@@ -83,7 +83,7 @@ export default async function MyComplaintsPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="font-medium">{c.title}</h3>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 mt-1" suppressHydrationWarning>
                       {c.publicId} &middot; {new Date(c.createdAt).toLocaleDateString('en-IN')}
                       {(c.category || c.citizenCategory) && (
                         <> &middot; {c.category || c.citizenCategory}</>

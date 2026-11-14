@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useState, useEffect } from 'react';
 import {
   submitComplaintAction,
   getPresignedUploadUrlsAction,
@@ -36,9 +36,13 @@ export default function ReportPage() {
   const [state, action, pending] = useActionState(submitComplaintAction, initial);
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [geoError, setGeoError] = useState<string | null>(null);
-  const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const [idempotencyKey, setIdempotencyKey] = useState('');
   const [uploads, setUploads] = useState<UploadItem[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIdempotencyKey(crypto.randomUUID());
+  }, []);
 
   function requestLocation() {
     setGeoError(null);

@@ -20,11 +20,15 @@
   },
   "dependencies": {
     "@nagrik-setu/shared": "*",
+    "argon2": "^0.45.2",
+    "cookie-parser": "^1.4.7",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.8.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
-    "vitest": "^2.1.0",
-    "mongodb-memory-server": "^10.0.0"
+    "@types/jsonwebtoken": "^9.0.10",
+    "mongodb-memory-server": "^10.0.0",
+    "vitest": "^2.1.0"
   }
 }

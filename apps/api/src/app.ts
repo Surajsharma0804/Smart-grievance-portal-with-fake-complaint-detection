@@ -1,11 +1,14 @@
 import express, { type Request, type Response, type NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { pino } from 'pino';
 import { randomUUID } from 'node:crypto';
 import { AppError } from '@nagrik-setu/shared';
 import { ZodError } from 'zod';
 import { healthRouter } from './routes/health.js';
+import { authRouter } from './routes/auth.js';
+import { complaintRouter } from './routes/complaints.js';
 
 const logger = pino({ level: 'info' });
 
@@ -28,9 +31,12 @@ export function createApp(options: { clientOrigin: string; logLevel?: string }) 
   app.use(helmet());
   app.use(cors({ origin: options.clientOrigin, credentials: true }));
   app.use(express.json({ limit: '1mb' }));
+  app.use(cookieParser());
 
   // Routes
   app.use('/', healthRouter);
+  app.use('/', authRouter);
+  app.use('/', complaintRouter);
 
   // 404 for unmatched routes
   app.use((_req: Request, _res: Response, next: NextFunction) => {

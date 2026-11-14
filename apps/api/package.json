@@ -14,26 +14,31 @@
     "lint": "echo ok"
   },
   "dependencies": {
-    "@nagrik-setu/shared": "*",
     "@nagrik-setu/domain": "*",
-    "express": "^5.1.0",
+    "@nagrik-setu/shared": "*",
+    "argon2": "^0.45.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-mongo-sanitize": "^2.2.0",
     "helmet": "^8.0.0",
     "hpp": "^0.2.3",
-    "express-mongo-sanitize": "^2.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.8.0",
     "pino": "^9.0.0",
     "pino-http": "^10.0.0",
-    "mongoose": "^8.8.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
-    "vitest": "^2.1.0",
-    "supertest": "^7.0.0",
-    "@types/express": "^5.0.0",
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.0",
+    "@types/express": "^5.0.0",
     "@types/hpp": "^0.2.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/supertest": "^6.0.0",
+    "mongodb-memory-server": "^10.0.0",
+    "supertest": "^7.0.0",
     "tsx": "^4.0.0",
-    "mongodb-memory-server": "^10.0.0"
+    "vitest": "^2.1.0"
   }
 }

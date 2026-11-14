@@ -7,6 +7,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <Link href="/" className="text-xl font-semibold">Nagrik Setu</Link>
         <nav className="flex items-center gap-4 text-sm">
           <Link href="/how-it-works" className="hover:underline">How it works</Link>
+          <Link href="/stats" className="hover:underline">City Stats</Link>
+          <Link href="/departments" className="hover:underline">Departments</Link>
           <Link href="/nearby" className="hover:underline">Nearby issues</Link>
           <Link href="/login" className="hover:underline">Sign in</Link>
           <Link

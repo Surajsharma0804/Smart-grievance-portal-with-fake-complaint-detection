@@ -20,7 +20,9 @@ export async function submitComplaintAction(
     description: (formData.get('description') as string) || undefined,
     citizenCategory: (formData.get('citizenCategory') as string) || undefined,
     anonymous: formData.get('anonymous') === 'on',
-    mediaKeys: ['placeholder-photo.jpg'], // Simplified: real upload via presigned URL in Phase 5
+    mediaKeys: (formData.get('mediaKeys') as string)?.split(',').filter(Boolean).length
+      ? (formData.get('mediaKeys') as string).split(',').filter(Boolean)
+      : ['placeholder-photo.jpg'],
     idempotencyKey: formData.get('idempotencyKey') as string,
     location: {
       type: 'Point' as const,

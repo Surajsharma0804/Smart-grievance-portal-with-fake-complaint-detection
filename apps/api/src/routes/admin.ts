@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { Role } from '@nagrik-setu/shared';
-import { Department, Category, Ward, User, AuditLog } from '@nagrik-setu/domain';
+import { Department, Category, Ward, User, AuditLog, Complaint } from '@nagrik-setu/domain';
 import { parseCookies, requireAuth, requireRole } from '../middleware/auth';
 import type { Types } from 'mongoose';
 
@@ -212,4 +212,75 @@ adminRouter.put('/admin/users/:id', ...adminAuth, async (req: Request, res: Resp
   const user = await User.findByIdAndUpdate(req.params.id, data, { new: true }).select('-passwordHash');
   await logAudit(req, 'UPDATE', 'User', before._id, before.toObject(), user?.toObject());
   res.json({ user });
+});
+
+// ---------------------------------------------------------------------------
+// Analytics & Export
+// ---------------------------------------------------------------------------
+
+adminRouter.get('/admin/analytics/summary', ...adminAuth, async (_req: Request, res: Response) => {
+  const [total, statusAgg, categoryAgg, overdueCount] = await Promise.all([
+    Complaint.countDocuments(),
+    Complaint.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
+    Complaint.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]),
+    Complaint.countDocuments({
+      status: { $nin: ['RESOLVED', 'CLOSED'] },
+      slaDueAt: { $lt: new Date() },
+    }),
+  ]);
+
+  const statusCounts: Record<string, number> = {};
+  for (const s of statusAgg) {
+    if (s._id) statusCounts[s._id] = s.count;
+  }
+
+  const categoryCounts: Record<string, number> = {};
+  for (const c of categoryAgg) {
+    if (c._id) categoryCounts[c._id] = c.count;
+  }
+
+  res.json({
+    summary: {
+      totalComplaints: total,
+      statusCounts,
+      categoryCounts,
+      overdueComplaints: overdueCount,
+    },
+  });
+});
+
+adminRouter.get('/admin/export/complaints.csv', ...adminAuth, async (_req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="complaints-export.csv"');
+
+  // Header line
+  res.write('Public ID,Title,Category,Status,Priority,Created At,SLA Due At,Anonymous\r\n');
+
+  const cursor = Complaint.find()
+    .sort({ createdAt: -1 })
+    .select('publicId title category status priority createdAt slaDueAt anonymous')
+    .cursor();
+
+  for await (const doc of cursor) {
+    const escapeCsv = (val: unknown) => {
+      if (val === null || val === undefined) return '';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const row = [
+      escapeCsv(doc.publicId),
+      escapeCsv(doc.title),
+      escapeCsv(doc.category || 'UNASSIGNED'),
+      escapeCsv(doc.status),
+      escapeCsv(doc.priority || 0),
+      escapeCsv(doc.createdAt ? new Date(doc.createdAt).toISOString() : ''),
+      escapeCsv(doc.slaDueAt ? new Date(doc.slaDueAt).toISOString() : ''),
+      escapeCsv(doc.anonymous ? 'Yes' : 'No'),
+    ].join(',');
+
+    res.write(row + '\r\n');
+  }
+
+  res.end();
 });

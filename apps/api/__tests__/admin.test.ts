@@ -130,4 +130,46 @@ describe('Admin CRUD API', () => {
     expect(auditLogs[0]!.action).toBe('UPDATE');
     expect(auditLogs[1]!.action).toBe('DELETE');
   });
+
+  it('provides analytics summary and CSV export to admins', async () => {
+    const cookies = await loginAsRole(Role.DEPT_ADMIN, 'analytics_admin@test.com');
+    const { Complaint, Ward } = await import('@nagrik-setu/domain');
+
+    const ward = await Ward.create({
+      code: 'WARD-99',
+      name: 'North Ward',
+      geometry: { type: 'Polygon', coordinates: [[[76.7, 30.7], [76.8, 30.7], [76.8, 30.8], [76.7, 30.8], [76.7, 30.7]]] },
+    });
+
+    await Complaint.create({
+      publicId: 'NS-ANALYTICS-1',
+      reporterId: new mongoose.Types.ObjectId(),
+      title: 'Major water leakage in north block',
+      location: { type: 'Point', coordinates: [76.75, 30.75] },
+      category: 'WATER',
+      status: 'SUBMITTED',
+      wardId: ward._id,
+      media: [{ kind: 'complaint', key: 'leak.jpg', source: 'CAMERA' }],
+      idempotencyKey: '550e8400-e29b-41d4-a716-446655440201',
+    });
+
+    // Analytics summary
+    const summaryRes = await request(app)
+      .get('/admin/analytics/summary')
+      .set('Cookie', cookies);
+
+    expect(summaryRes.status).toBe(200);
+    expect(summaryRes.body.summary.totalComplaints).toBeGreaterThanOrEqual(1);
+    expect(summaryRes.body.summary.categoryCounts).toHaveProperty('WATER');
+
+    // CSV export
+    const csvRes = await request(app)
+      .get('/admin/export/complaints.csv')
+      .set('Cookie', cookies);
+
+    expect(csvRes.status).toBe(200);
+    expect(csvRes.headers['content-type']).toContain('text/csv');
+    expect(csvRes.text).toContain('NS-ANALYTICS-1');
+    expect(csvRes.text).toContain('WATER');
+  });
 });

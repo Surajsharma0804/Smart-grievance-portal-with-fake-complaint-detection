@@ -215,12 +215,17 @@ function RequireAuth({ children }: { children: ReactNode }) {
 
 // --- Layout ---
 function DashboardLayout() {
-  const { user, logout } = useAuth();
+  const { user, login, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
+  };
+
+  const handleQuickSwitch = async (email: string) => {
+    await login(email, 'password123');
+    window.location.reload();
   };
 
   const NAV = [
@@ -252,17 +257,61 @@ function DashboardLayout() {
             ))}
           </nav>
         </div>
-        <div className="border-t border-slate-100 pt-4 space-y-2">
+        <div className="border-t border-slate-100 pt-4 space-y-3">
           <div className="text-xs text-slate-500">
-            <p className="font-medium text-slate-800">{user?.name}</p>
-            <p className="truncate">{user?.email}</p>
-            <span className="inline-block mt-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-semibold">
+            <p className="font-semibold text-slate-900">{user?.name}</p>
+            <p className="truncate text-slate-500">{user?.email}</p>
+            <span className="inline-block mt-1 px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-semibold border border-blue-200">
               {user?.role}
             </span>
           </div>
+
+          {/* 1-Click Role Switcher */}
+          <div className="p-2 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
+            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Switch Persona</p>
+            <div className="grid grid-cols-3 gap-1">
+              <button
+                type="button"
+                onClick={() => handleQuickSwitch('officer@test.com')}
+                title="Switch to Ward Officer"
+                className={`py-1 text-[11px] rounded font-medium transition-colors ${
+                  user?.role === 'OFFICER'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                Officer
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickSwitch('admin@test.com')}
+                title="Switch to Dept Admin"
+                className={`py-1 text-[11px] rounded font-medium transition-colors ${
+                  user?.role === 'DEPT_ADMIN'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickSwitch('reviewer@test.com')}
+                title="Switch to Reviewer"
+                className={`py-1 text-[11px] rounded font-medium transition-colors ${
+                  user?.role === 'REVIEWER'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                Reviewer
+              </button>
+            </div>
+          </div>
+
           <button
             onClick={handleLogout}
-            className="w-full text-left text-xs text-red-600 hover:text-red-700 hover:underline pt-2"
+            className="w-full text-left text-xs text-red-600 hover:text-red-700 hover:underline pt-1"
           >
             Sign out
           </button>
@@ -392,15 +441,26 @@ function QueuePage() {
 }
 
 function ReviewPage() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const isReviewer = user?.role === 'REVIEWER' || user?.role === 'DEPT_ADMIN';
 
   const fetchTasks = () => {
     setLoading(true);
+    setError(null);
     fetch('/api/admin/review-tasks?status=pending', { credentials: 'include' })
-      .then((r) => (r.ok ? r.json() : { tasks: [] }))
+      .then(async (r) => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => null);
+          throw new Error(err?.error?.message || `Failed to fetch tasks (${r.status})`);
+        }
+        return r.json();
+      })
       .then((data) => setTasks(data.tasks || []))
-      .catch(() => setTasks([]))
+      .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   };
 
@@ -409,12 +469,16 @@ function ReviewPage() {
   }, []);
 
   const handleDecision = async (id: string, action: string, reason: string) => {
-    await fetch(`/api/admin/review-tasks/${id}/decide`, {
+    const res = await fetch(`/api/admin/review-tasks/${id}/decide`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ action, reason }),
     });
+    if (!res.ok) {
+      const err = await res.json().catch(() => null);
+      alert(err?.error?.message || 'Decision failed');
+    }
     fetchTasks();
   };
 
@@ -435,12 +499,26 @@ function ReviewPage() {
         </button>
       </div>
 
+      {!isReviewer && (
+        <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs flex justify-between items-center">
+          <span>ℹ️ Viewing Reviewer Workbench in read-only mode as <strong>{user?.name || 'Officer'}</strong>. Adjudicating fraud decisions requires the <strong>Reviewer</strong> role (reviewer@test.com).</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
+          {error}
+        </div>
+      )}
+
       {loading ? (
         <div className="p-8 text-center text-sm text-slate-500">Loading review workbench...</div>
       ) : tasks.length === 0 ? (
         <div className="p-12 text-center bg-white border border-slate-200 rounded-xl space-y-2">
           <p className="text-base font-medium text-slate-700">Review queue is clean</p>
-          <p className="text-xs text-slate-500">No complaints currently flagged for human verification.</p>
+          <p className="text-xs text-slate-500">
+            No complaints currently flagged by AI for human fraud verification. Legitimate complaints proceed directly to the Officer Queue.
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -463,20 +541,22 @@ function ReviewPage() {
                 </div>
               )}
 
-              <div className="flex gap-3 pt-2">
-                <button
-                  onClick={() => handleDecision(task._id, 'APPROVE', 'Verified genuine by human reviewer')}
-                  className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-medium hover:bg-emerald-700"
-                >
-                  ✓ Approve & Route
-                </button>
-                <button
-                  onClick={() => handleDecision(task._id, 'REJECT', 'Confirmed fake / stock photo by reviewer')}
-                  className="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-medium hover:bg-rose-700"
-                >
-                  ✕ Reject & Close
-                </button>
-              </div>
+              {isReviewer && (
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={() => handleDecision(task._id, 'APPROVE', 'Verified genuine by human reviewer')}
+                    className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-medium hover:bg-emerald-700"
+                  >
+                    ✓ Approve & Route
+                  </button>
+                  <button
+                    onClick={() => handleDecision(task._id, 'REJECT', 'Confirmed fake / stock photo by reviewer')}
+                    className="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-medium hover:bg-rose-700"
+                  >
+                    ✕ Reject & Close
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -486,15 +566,30 @@ function ReviewPage() {
 }
 
 function DeptPage() {
+  const { user } = useAuth();
   const [departments, setDepartments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [sla, setSla] = useState(48);
 
+  const isAdmin = user?.role === 'DEPT_ADMIN';
+
   const fetchDepts = () => {
+    setLoading(true);
+    setError(null);
     fetch('/api/admin/departments', { credentials: 'include' })
-      .then((r) => (r.ok ? r.json() : { departments: [] }))
-      .then((data) => setDepartments(data.departments || []));
+      .then(async (r) => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => null);
+          throw new Error(err?.error?.message || `Failed to fetch departments (${r.status})`);
+        }
+        return r.json();
+      })
+      .then((data) => setDepartments(data.departments || []))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -503,129 +598,216 @@ function DeptPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch('/api/admin/departments', {
+    const res = await fetch('/api/admin/departments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ code, name, defaultSlaHours: Number(sla) }),
     });
-    setCode('');
-    setName('');
-    fetchDepts();
+    if (res.ok) {
+      setCode('');
+      setName('');
+      fetchDepts();
+    } else {
+      const err = await res.json().catch(() => null);
+      alert(err?.error?.message || 'Failed to create department');
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Department Administration</h1>
-        <p className="text-sm text-slate-500 mt-1">Manage municipal service divisions and SLA commitments.</p>
-      </div>
-
-      <form onSubmit={handleCreate} className="p-4 bg-white border border-slate-200 rounded-xl flex gap-3 items-end shadow-sm">
-        <div className="flex-1">
-          <label className="block text-xs font-medium text-slate-700 mb-1">Code</label>
-          <input
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="e.g. ROADS"
-            required
-            className="w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs"
-          />
-        </div>
-        <div className="flex-2">
-          <label className="block text-xs font-medium text-slate-700 mb-1">Name</label>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Roads & Infrastructure"
-            required
-            className="w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs"
-          />
-        </div>
-        <div className="w-24">
-          <label className="block text-xs font-medium text-slate-700 mb-1">SLA (Hours)</label>
-          <input
-            type="number"
-            value={sla}
-            onChange={(e) => setSla(Number(e.target.value))}
-            required
-            className="w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs"
-          />
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Department Administration</h1>
+          <p className="text-sm text-slate-500 mt-1">Manage municipal service divisions and SLA commitments.</p>
         </div>
         <button
-          type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700"
+          onClick={fetchDepts}
+          className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm"
         >
-          Add Department
+          🔄 Refresh
         </button>
-      </form>
-
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
-            <tr>
-              <th className="px-4 py-3">Code</th>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Default SLA</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {departments.map((d) => (
-              <tr key={d._id} className="hover:bg-slate-50">
-                <td className="px-4 py-3 font-mono font-medium text-xs text-blue-600">{d.code}</td>
-                <td className="px-4 py-3 font-medium text-slate-900">{d.name}</td>
-                <td className="px-4 py-3 text-slate-600">{d.defaultSlaHours} hours</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
+
+      {!isAdmin ? (
+        <div className="p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl text-xs flex justify-between items-center">
+          <span>ℹ️ Viewing municipal departments. Note: Creating new departments requires the <strong>Dept Admin</strong> role (admin@test.com).</span>
+        </div>
+      ) : (
+        <form onSubmit={handleCreate} className="p-4 bg-white border border-slate-200 rounded-xl flex gap-3 items-end shadow-sm">
+          <div className="flex-1">
+            <label className="block text-xs font-medium text-slate-700 mb-1">Code</label>
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="e.g. ROADS"
+              required
+              className="w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs"
+            />
+          </div>
+          <div className="flex-2">
+            <label className="block text-xs font-medium text-slate-700 mb-1">Name</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Roads & Infrastructure"
+              required
+              className="w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs"
+            />
+          </div>
+          <div className="w-24">
+            <label className="block text-xs font-medium text-slate-700 mb-1">SLA (Hours)</label>
+            <input
+              type="number"
+              value={sla}
+              onChange={(e) => setSla(Number(e.target.value))}
+              required
+              className="w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs"
+            />
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700"
+          >
+            Add Department
+          </button>
+        </form>
+      )}
+
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="p-8 text-center text-sm text-slate-500">Loading departments...</div>
+      ) : (
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
+              <tr>
+                <th className="px-4 py-3">Code</th>
+                <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Default SLA</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {departments.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="px-4 py-6 text-center text-slate-400 text-xs">
+                    No departments found.
+                  </td>
+                </tr>
+              ) : (
+                departments.map((d) => (
+                  <tr key={d._id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 font-mono font-medium text-xs text-blue-600">{d.code}</td>
+                    <td className="px-4 py-3 font-medium text-slate-900">{d.name}</td>
+                    <td className="px-4 py-3 text-slate-600">{d.defaultSlaHours} hours</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
 
 function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchUsers = () => {
+    setLoading(true);
+    setError(null);
+    fetch('/api/admin/users', { credentials: 'include' })
+      .then(async (r) => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => null);
+          throw new Error(err?.error?.message || `Failed to fetch users (${r.status})`);
+        }
+        return r.json();
+      })
+      .then((data) => setUsers(data.users || []))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    fetch('/api/admin/users', { credentials: 'include' })
-      .then((r) => (r.ok ? r.json() : { users: [] }))
-      .then((data) => setUsers(data.users || []));
+    fetchUsers();
   }, []);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">User Directory & Roles</h1>
-        <p className="text-sm text-slate-500 mt-1">Authorized officers, reviewers, and department administrators.</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">User Directory & Roles</h1>
+          <p className="text-sm text-slate-500 mt-1">Authorized officers, reviewers, and department administrators.</p>
+        </div>
+        <button
+          onClick={fetchUsers}
+          className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm"
+        >
+          🔄 Refresh
+        </button>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
-            <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Role</th>
-              <th className="px-4 py-3">Reputation Score</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {users.map((u) => (
-              <tr key={u._id} className="hover:bg-slate-50">
-                <td className="px-4 py-3 font-medium text-slate-900">{u.name}</td>
-                <td className="px-4 py-3 text-slate-600">{u.email}</td>
-                <td className="px-4 py-3">
-                  <span className="px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700">
-                    {u.role}
-                  </span>
-                </td>
-                <td className="px-4 py-3 font-mono text-xs">{u.reputation?.score ?? 100}/100</td>
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="p-8 text-center text-sm text-slate-500">Loading user directory...</div>
+      ) : (
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
+              <tr>
+                <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Email</th>
+                <th className="px-4 py-3">Role</th>
+                <th className="px-4 py-3">Reputation Score</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-6 text-center text-slate-400 text-xs">
+                    No users found.
+                  </td>
+                </tr>
+              ) : (
+                users.map((u) => (
+                  <tr key={u._id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 font-medium text-slate-900">{u.name}</td>
+                    <td className="px-4 py-3 text-slate-600">{u.email}</td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                        u.role === 'OFFICER'
+                          ? 'bg-blue-50 text-blue-700'
+                          : u.role === 'DEPT_ADMIN'
+                          ? 'bg-purple-50 text-purple-700'
+                          : u.role === 'REVIEWER'
+                          ? 'bg-amber-50 text-amber-700'
+                          : 'bg-slate-100 text-slate-700'
+                      }`}>
+                        {u.role}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs">{u.reputation?.score ?? 100}/100</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

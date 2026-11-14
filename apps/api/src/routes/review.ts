@@ -19,11 +19,17 @@ const reviewerAuth = [
   requireRole(Role.REVIEWER, Role.DEPT_ADMIN),
 ] as const;
 
+const staffReadAuth = [
+  parseCookies,
+  requireAuth,
+  requireRole(Role.OFFICER, Role.REVIEWER, Role.DEPT_ADMIN),
+] as const;
+
 /**
  * GET /admin/review-tasks
  * List pending review tasks with populated complaint data.
  */
-reviewRouter.get('/admin/review-tasks', ...reviewerAuth, async (req: Request, res: Response) => {
+reviewRouter.get('/admin/review-tasks', ...staffReadAuth, async (req: Request, res: Response) => {
   const status = (req.query.status as string) || 'pending';
   const tasks = await ReviewTask.find({ status })
     .populate({

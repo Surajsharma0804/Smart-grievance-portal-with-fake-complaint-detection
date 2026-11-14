@@ -8,6 +8,11 @@ import type { Types } from 'mongoose';
 export const adminRouter = Router();
 
 const adminAuth = [parseCookies, requireAuth, requireRole(Role.DEPT_ADMIN)] as const;
+const staffReadAuth = [
+  parseCookies,
+  requireAuth,
+  requireRole(Role.OFFICER, Role.REVIEWER, Role.DEPT_ADMIN),
+] as const;
 
 async function logAudit(
   req: Request,
@@ -48,7 +53,7 @@ const departmentSchema = z.object({
   defaultSlaHours: z.number().int().positive().default(48),
 });
 
-adminRouter.get('/admin/departments', ...adminAuth, async (_req: Request, res: Response) => {
+adminRouter.get('/admin/departments', ...staffReadAuth, async (_req: Request, res: Response) => {
   const departments = await Department.find().sort({ code: 1 });
   res.json({ departments });
 });
@@ -98,7 +103,7 @@ const categoryInputSchema = z.object({
   keywords: z.array(z.string()).default([]),
 });
 
-adminRouter.get('/admin/categories', ...adminAuth, async (_req: Request, res: Response) => {
+adminRouter.get('/admin/categories', ...staffReadAuth, async (_req: Request, res: Response) => {
   const categories = await Category.find().populate('departmentId', 'name code').sort({ code: 1 });
   res.json({ categories });
 });
@@ -146,7 +151,7 @@ const wardInputSchema = z.object({
   }),
 });
 
-adminRouter.get('/admin/wards', ...adminAuth, async (_req: Request, res: Response) => {
+adminRouter.get('/admin/wards', ...staffReadAuth, async (_req: Request, res: Response) => {
   const wards = await Ward.find().sort({ code: 1 });
   res.json({ wards });
 });
@@ -185,7 +190,7 @@ adminRouter.delete('/admin/wards/:id', ...adminAuth, async (req: Request, res: R
 // Users
 // ---------------------------------------------------------------------------
 
-adminRouter.get('/admin/users', ...adminAuth, async (req: Request, res: Response) => {
+adminRouter.get('/admin/users', ...staffReadAuth, async (req: Request, res: Response) => {
   const role = req.query.role as string | undefined;
   const filter = role ? { role } : {};
   const users = await User.find(filter)

@@ -17,12 +17,18 @@ const officerAuth = [
   requireRole(Role.OFFICER, Role.DEPT_ADMIN),
 ] as const;
 
+const staffReadAuth = [
+  parseCookies,
+  requireAuth,
+  requireRole(Role.OFFICER, Role.REVIEWER, Role.DEPT_ADMIN),
+] as const;
+
 /**
  * GET /officer/queue
  * Returns open complaints assigned to the officer or in their department,
  * sorted by priority descending and SLA due date ascending.
  */
-officerRouter.get('/officer/queue', ...officerAuth, async (req: Request, res: Response) => {
+officerRouter.get('/officer/queue', ...staffReadAuth, async (req: Request, res: Response) => {
   const userId = req.user!.sub;
   const userRole = req.user!.role;
 
@@ -75,15 +81,22 @@ officerRouter.post('/complaints/:id/status', ...officerAuth, async (req: Request
     return;
   }
 
-  // Check authorization: must be assigned officer or DEPT_ADMIN
+  // Check authorization: must be assigned officer or DEPT_ADMIN or claiming unassigned
   const isAssigned = complaint.assigneeId?.toString() === req.user!.sub;
   const isDeptAdmin = req.user!.role === Role.DEPT_ADMIN;
+  const canClaim = !complaint.assigneeId && (req.user!.role === Role.OFFICER || isDeptAdmin);
 
-  if (!isAssigned && !isDeptAdmin) {
+  if (!isAssigned && !isDeptAdmin && !canClaim) {
     res.status(403).json({
       error: { code: 'FORBIDDEN', message: 'You are not assigned to this complaint' },
     });
     return;
+  }
+
+  // If unassigned, automatically assign to this officer
+  if (!complaint.assigneeId) {
+    complaint.assigneeId = req.user!.sub as any;
+    await complaint.save();
   }
 
   try {

@@ -1,5 +1,11 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'node:path';
 import mongoose from 'mongoose';
+
+// Load .env from workspace or repository root
+dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
+
 import { createApp } from './app';
 import { loadConfig } from './config';
 

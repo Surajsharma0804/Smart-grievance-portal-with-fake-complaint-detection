@@ -50,11 +50,18 @@ export async function registerAction(
     return { fieldErrors };
   }
 
-  const res = await fetch(`${API_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(parsed.data),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parsed.data),
+    });
+  } catch {
+    return {
+      error: 'Cannot connect to backend server. Please verify the API server is running on port 4000.',
+    };
+  }
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);
@@ -83,11 +90,18 @@ export async function loginAction(
     return { fieldErrors };
   }
 
-  const res = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(parsed.data),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parsed.data),
+    });
+  } catch {
+    return {
+      error: 'Cannot connect to backend server. Please verify the API server is running on port 4000.',
+    };
+  }
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);

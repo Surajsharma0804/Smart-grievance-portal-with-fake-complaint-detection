@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { Department } from '../models/department.js';
-import { Category } from '../models/category.js';
-import { Ward } from '../models/ward.js';
+import { Department } from '../models/department';
+import { Category } from '../models/category';
+import { Ward } from '../models/ward';
 
 interface DeptSeed {
   code: string;

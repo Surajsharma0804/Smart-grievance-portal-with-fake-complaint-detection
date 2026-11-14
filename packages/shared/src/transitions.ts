@@ -1,4 +1,4 @@
-import { ComplaintStatus } from './enums.js';
+import { ComplaintStatus } from './enums';
 
 /**
  * Allowed state transitions for the complaint lifecycle (design.md §8).

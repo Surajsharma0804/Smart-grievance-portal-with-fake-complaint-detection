@@ -1,4 +1,4 @@
-import { Ward, type IWard } from '../models/ward.js';
+import { Ward, type IWard } from '../models/ward';
 
 /**
  * Look up the ward that contains a GeoJSON point.

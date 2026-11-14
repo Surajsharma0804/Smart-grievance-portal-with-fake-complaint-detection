@@ -1,6 +1,6 @@
 import { type ComplaintStatus, canTransition, Errors } from '@nagrik-setu/shared';
-import type { IComplaint } from '../models/complaint.js';
-import { AuditLog } from '../models/audit-log.js';
+import type { IComplaint } from '../models/complaint';
+import { AuditLog } from '../models/audit-log';
 import type { Types } from 'mongoose';
 
 /**

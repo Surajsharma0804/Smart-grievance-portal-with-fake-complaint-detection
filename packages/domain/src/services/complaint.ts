@@ -4,9 +4,9 @@ import {
   ComplaintStatus,
   MediaSource,
 } from '@nagrik-setu/shared';
-import { Complaint, type IComplaint } from '../models/complaint.js';
-import { OutboxEvent } from '../models/outbox-event.js';
-import { Ward } from '../models/ward.js';
+import { Complaint, type IComplaint } from '../models/complaint';
+import { OutboxEvent } from '../models/outbox-event';
+import { Ward } from '../models/ward';
 import type { Types } from 'mongoose';
 
 function genPublicId(): string {

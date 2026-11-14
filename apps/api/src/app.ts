@@ -6,9 +6,9 @@ import { pino } from 'pino';
 import { randomUUID } from 'node:crypto';
 import { AppError } from '@nagrik-setu/shared';
 import { ZodError } from 'zod';
-import { healthRouter } from './routes/health.js';
-import { authRouter } from './routes/auth.js';
-import { complaintRouter } from './routes/complaints.js';
+import { healthRouter } from './routes/health';
+import { authRouter } from './routes/auth';
+import { complaintRouter } from './routes/complaints';
 
 const logger = pino({ level: 'info' });
 

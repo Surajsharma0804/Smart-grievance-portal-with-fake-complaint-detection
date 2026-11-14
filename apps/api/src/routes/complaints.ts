@@ -6,7 +6,7 @@ import {
   toPublicDTO,
   toOwnerDTO,
 } from '@nagrik-setu/domain';
-import { parseCookies, requireAuth } from '../middleware/auth.js';
+import { parseCookies, requireAuth } from '../middleware/auth';
 
 export const complaintRouter = Router();
 

@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from 'express';
 import cookieParser from 'cookie-parser';
 import { registerSchema, loginSchema } from '@nagrik-setu/shared';
 import { authService } from '@nagrik-setu/domain';
-import { getConfig } from '../config.js';
+import { getConfig } from '../config';
 
 export const authRouter = Router();
 

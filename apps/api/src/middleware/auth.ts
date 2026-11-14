@@ -2,7 +2,7 @@ import { type Request, type Response, type NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import { type Role, Errors } from '@nagrik-setu/shared';
 import { authService, type AccessPayload, User } from '@nagrik-setu/domain';
-import { getConfig } from '../config.js';
+import { getConfig } from '../config';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

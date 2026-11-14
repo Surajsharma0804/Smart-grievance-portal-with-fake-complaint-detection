@@ -1,6 +1,7 @@
+import 'dotenv/config';
 import mongoose from 'mongoose';
-import { createApp } from './app.js';
-import { loadConfig } from './config.js';
+import { createApp } from './app';
+import { loadConfig } from './config';
 
 async function main() {
   const config = loadConfig();

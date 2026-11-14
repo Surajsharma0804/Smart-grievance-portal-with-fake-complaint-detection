@@ -1,4 +1,4 @@
-import type { IComplaint } from '../models/complaint.js';
+import type { IComplaint } from '../models/complaint';
 
 /**
  * Public DTO — strips internal fields, hides anonymous reporter,

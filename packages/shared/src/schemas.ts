@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CategoryCode, ComplaintStatus } from './enums.js';
+import { CategoryCode, ComplaintStatus } from './enums';
 
 // ---------------------------------------------------------------------------
 // Auth schemas

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import * as argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { type RegisterInput, type LoginInput, Errors, type Role } from '@nagrik-setu/shared';
-import { User, type IUser } from '../models/user.js';
+import { User, type IUser } from '../models/user';
 
 export interface TokenPair {
   accessToken: string;

@@ -73,6 +73,36 @@ export const complaintTransitionSchema = z
   .strict();
 
 // ---------------------------------------------------------------------------
+// Citizen-owned schemas (Saved Areas & Notification Preferences)
+// ---------------------------------------------------------------------------
+
+export const savedAreaCreateSchema = z
+  .object({
+    label: z.string().trim().min(1).max(50),
+    center: geoPointSchema,
+    radiusM: z.number().min(100).max(10000).default(1000),
+    categories: z.array(z.string()).default([]),
+  })
+  .strict();
+
+export const notificationPrefsSchema = z
+  .object({
+    channels: z.object({
+      inApp: z.boolean().default(true),
+      email: z.boolean().default(true),
+    }),
+    quietHours: z
+      .object({
+        enabled: z.boolean().default(false),
+        start: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).default('22:00'),
+        end: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).default('07:00'),
+      })
+      .optional(),
+    language: z.enum(['en', 'hi']).default('en'),
+  })
+  .strict();
+
+// ---------------------------------------------------------------------------
 // Type exports
 // ---------------------------------------------------------------------------
 
@@ -83,3 +113,5 @@ export type ComplaintCreateInput = z.infer<typeof complaintCreateSchema>;
 export type ComplaintTransitionInput = z.infer<
   typeof complaintTransitionSchema
 >;
+export type SavedAreaCreateInput = z.infer<typeof savedAreaCreateSchema>;
+export type NotificationPrefsInput = z.infer<typeof notificationPrefsSchema>;

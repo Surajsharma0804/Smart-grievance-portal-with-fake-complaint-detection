@@ -8,13 +8,15 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "lint": "next lint",
-    "test": "echo ok"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@nagrik-setu/shared": "*",
+    "mongoose": "^8.8.0",
     "next": "^15.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

@@ -1,0 +1,39 @@
+{
+  "name": "@nagrik-setu/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "lint": "echo ok"
+  },
+  "dependencies": {
+    "@nagrik-setu/shared": "*",
+    "@nagrik-setu/domain": "*",
+    "express": "^5.1.0",
+    "cors": "^2.8.5",
+    "helmet": "^8.0.0",
+    "hpp": "^0.2.3",
+    "express-mongo-sanitize": "^2.2.0",
+    "pino": "^9.0.0",
+    "pino-http": "^10.0.0",
+    "mongoose": "^8.8.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.0",
+    "supertest": "^7.0.0",
+    "@types/express": "^5.0.0",
+    "@types/cors": "^2.8.0",
+    "@types/hpp": "^0.2.6",
+    "@types/supertest": "^6.0.0",
+    "tsx": "^4.0.0",
+    "mongodb-memory-server": "^10.0.0"
+  }
+}

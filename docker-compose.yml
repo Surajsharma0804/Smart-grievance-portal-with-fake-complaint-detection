@@ -1,0 +1,19 @@
+# Local development stack
+# MongoDB runs natively as a Windows service (port 27017).
+# This compose file provides Redis for the BullMQ job queue.
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  redis-data:

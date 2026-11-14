@@ -2,6 +2,7 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { complaintCreateSchema } from '@nagrik-setu/shared';
 
 const API_URL = process.env.API_BASE_URL || 'http://localhost:4000';
@@ -88,4 +89,108 @@ export async function submitComplaintAction(
 
   const body = await res.json();
   redirect(`/track/${body.complaint.publicId}`);
+}
+
+export async function upvoteComplaintAction(
+  publicId: string,
+): Promise<{ success: boolean; upvoted?: boolean; upvotes?: number; error?: string }> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+  if (!accessToken) return { success: false, error: 'Authentication required' };
+
+  const res = await fetch(`${API_URL}/complaints/${publicId}/upvote`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: `accessToken=${accessToken}`,
+    },
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    return { success: false, error: body?.error?.message || 'Failed to update upvote' };
+  }
+
+  const data = await res.json();
+  revalidatePath(`/track/${publicId}`);
+  return { success: true, upvoted: data.upvoted, upvotes: data.upvotes };
+}
+
+export async function reopenComplaintAction(
+  publicId: string,
+  reason: string,
+): Promise<{ success: boolean; error?: string }> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+  if (!accessToken) return { success: false, error: 'Authentication required' };
+
+  const res = await fetch(`${API_URL}/complaints/${publicId}/reopen`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: `accessToken=${accessToken}`,
+    },
+    body: JSON.stringify({ reason }),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    return { success: false, error: body?.error?.message || 'Failed to reopen complaint' };
+  }
+
+  revalidatePath(`/track/${publicId}`);
+  return { success: true };
+}
+
+export async function submitFeedbackAction(
+  publicId: string,
+  rating: number,
+  comment?: string,
+): Promise<{ success: boolean; error?: string }> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+  if (!accessToken) return { success: false, error: 'Authentication required' };
+
+  const res = await fetch(`${API_URL}/complaints/${publicId}/feedback`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: `accessToken=${accessToken}`,
+    },
+    body: JSON.stringify({ rating, comment }),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    return { success: false, error: body?.error?.message || 'Failed to submit feedback' };
+  }
+
+  revalidatePath(`/track/${publicId}`);
+  return { success: true };
+}
+
+export async function appealComplaintAction(
+  publicId: string,
+  reason: string,
+): Promise<{ success: boolean; error?: string }> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+  if (!accessToken) return { success: false, error: 'Authentication required' };
+
+  const res = await fetch(`${API_URL}/complaints/${publicId}/appeal`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: `accessToken=${accessToken}`,
+    },
+    body: JSON.stringify({ reason }),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    return { success: false, error: body?.error?.message || 'Failed to submit appeal' };
+  }
+
+  revalidatePath(`/track/${publicId}`);
+  return { success: true };
 }

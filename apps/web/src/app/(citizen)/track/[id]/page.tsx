@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { TrackActions } from './TrackActions';
 
 const API_URL = process.env.API_BASE_URL || 'http://localhost:4000';
 
@@ -109,7 +110,7 @@ export default async function TrackPage({ params }: TrackPageProps) {
       </div>
 
       {/* Status badge */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-4">
         <span className={`w-3 h-3 rounded-full ${STATUS_COLORS[complaint.status] ?? 'bg-gray-400'}`} />
         <span className="font-medium">
           {STATUS_LABELS[complaint.status] ?? complaint.status}
@@ -120,6 +121,14 @@ export default async function TrackPage({ params }: TrackPageProps) {
           </span>
         )}
       </div>
+
+      {/* Citizen interactive actions: Upvote, Feedback, Reopen, Appeal */}
+      <TrackActions
+        publicId={complaint.publicId}
+        initialUpvotes={complaint.upvotes ?? 0}
+        status={complaint.status}
+        isOwner={complaint.anonymous !== undefined}
+      />
 
       {/* Details card */}
       <div className="bg-white border rounded-lg p-5 mb-6">

@@ -244,3 +244,79 @@ describe('DTO privacy', () => {
     expect(lat).toBe(30.745);
   });
 });
+
+describe('Complaint interactions (upvote, feedback, reopen, appeal)', () => {
+  it('toggles upvote for other users and prevents upvoting own complaint', async () => {
+    const ownerCookies = await registerAndGetCookies(app, 'owner@example.com');
+    const voterCookies = await registerAndGetCookies(app, 'voter@example.com');
+
+    const createRes = await request(app).post('/complaints').set('Cookie', ownerCookies).send({
+      title: 'Broken street lamp on main road',
+      location: { type: 'Point', coordinates: [76.785, 30.745] },
+      mediaKeys: ['photo1.jpg'],
+      idempotencyKey: '550e8400-e29b-41d4-a716-446655440099',
+    });
+    const publicId = createRes.body.complaint.publicId;
+
+    // Cannot upvote own complaint
+    const selfVote = await request(app).post(`/complaints/${publicId}/upvote`).set('Cookie', ownerCookies);
+    expect(selfVote.status).toBe(400);
+
+    // Voter upvotes
+    const vote1 = await request(app).post(`/complaints/${publicId}/upvote`).set('Cookie', voterCookies);
+    expect(vote1.status).toBe(200);
+    expect(vote1.body.upvoted).toBe(true);
+    expect(vote1.body.upvotes).toBe(1);
+
+    // Voter toggles upvote off
+    const vote2 = await request(app).post(`/complaints/${publicId}/upvote`).set('Cookie', voterCookies);
+    expect(vote2.status).toBe(200);
+    expect(vote2.body.upvoted).toBe(false);
+    expect(vote2.body.upvotes).toBe(0);
+  });
+
+  it('allows reporter to submit feedback on resolved complaint', async () => {
+    const ownerCookies = await registerAndGetCookies(app, 'feedback_owner@example.com');
+    const createRes = await request(app).post('/complaints').set('Cookie', ownerCookies).send({
+      title: 'Water pipe leaking on 5th avenue',
+      location: { type: 'Point', coordinates: [76.785, 30.745] },
+      mediaKeys: ['photo1.jpg'],
+      idempotencyKey: '550e8400-e29b-41d4-a716-446655440101',
+    });
+    const publicId = createRes.body.complaint.publicId;
+
+    // Reject feedback while still submitted
+    const earlyFeedback = await request(app)
+      .post(`/complaints/${publicId}/feedback`)
+      .set('Cookie', ownerCookies)
+      .send({ rating: 5, comment: 'Great job' });
+    expect(earlyFeedback.status).toBe(400);
+
+    // Simulate resolved complaint in DB
+    const { Complaint } = await import('@nagrik-setu/domain');
+    const { ComplaintStatus } = await import('@nagrik-setu/shared');
+    await Complaint.updateOne(
+      { publicId },
+      {
+        $set: { status: ComplaintStatus.RESOLVED },
+        $push: { statusHistory: { from: ComplaintStatus.IN_PROGRESS, to: ComplaintStatus.RESOLVED, at: new Date() } },
+      },
+    );
+
+    // Reporter submits feedback
+    const feedbackRes = await request(app)
+      .post(`/complaints/${publicId}/feedback`)
+      .set('Cookie', ownerCookies)
+      .send({ rating: 5, comment: 'Pothole was patched promptly, thank you!' });
+    expect(feedbackRes.status).toBe(200);
+    expect(feedbackRes.body.success).toBe(true);
+
+    // Reporter can reopen resolved complaint within 7 days
+    const reopenRes = await request(app)
+      .post(`/complaints/${publicId}/reopen`)
+      .set('Cookie', ownerCookies)
+      .send({ reason: 'The patch already came off after rain today' });
+    expect(reopenRes.status).toBe(200);
+    expect(reopenRes.body.complaint.status).toBe(ComplaintStatus.REOPENED);
+  });
+});

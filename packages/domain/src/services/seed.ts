@@ -1,7 +1,11 @@
 import mongoose from 'mongoose';
+import * as argon2 from 'argon2';
+import { randomUUID } from 'node:crypto';
+import { Role } from '@nagrik-setu/shared';
 import { Department } from '../models/department';
 import { Category } from '../models/category';
 import { Ward } from '../models/ward';
+import { User } from '../models/user';
 
 interface DeptSeed {
   code: string;
@@ -120,9 +124,64 @@ export async function seed() {
 
   await Ward.ensureIndexes();
 
+  await seedDemoUsers();
+
   return {
     departments: DEPARTMENTS.length,
     categories: CATEGORIES.length,
     wards: WARDS.length,
   };
+}
+
+export async function seedDemoUsers() {
+  const passwordHash = await argon2.hash('password123', { type: argon2.argon2id });
+  const roadsDept = await Department.findOne({ code: 'ROADS' });
+  const sanitationDept = await Department.findOne({ code: 'SANITATION' });
+  const centralWard = await Ward.findOne({ code: 'CHD-01' });
+
+  const demoUsers = [
+    {
+      name: 'Aarav Sharma (Citizen)',
+      email: 'citizen@test.com',
+      passwordHash,
+      role: Role.CITIZEN,
+      refreshTokenFamily: randomUUID(),
+    },
+    {
+      name: 'Inspector Rajesh Verma (Officer)',
+      email: 'officer@test.com',
+      passwordHash,
+      role: Role.OFFICER,
+      departmentId: roadsDept?._id,
+      wardIds: centralWard ? [centralWard._id] : [],
+      refreshTokenFamily: randomUUID(),
+    },
+    {
+      name: 'Sunita Patel (Dept Admin)',
+      email: 'admin@test.com',
+      passwordHash,
+      role: Role.DEPT_ADMIN,
+      departmentId: sanitationDept?._id,
+      refreshTokenFamily: randomUUID(),
+    },
+    {
+      name: 'Vikram Mehta (Reviewer)',
+      email: 'reviewer@test.com',
+      passwordHash,
+      role: Role.REVIEWER,
+      refreshTokenFamily: randomUUID(),
+    },
+  ];
+
+  for (const u of demoUsers) {
+    const existing = await User.findOne({ email: u.email });
+    if (!existing) {
+      await User.create(u);
+    } else {
+      existing.passwordHash = passwordHash;
+      if (u.departmentId && !existing.departmentId) existing.departmentId = u.departmentId;
+      if (u.wardIds && (!existing.wardIds || existing.wardIds.length === 0)) existing.wardIds = u.wardIds;
+      await existing.save();
+    }
+  }
 }

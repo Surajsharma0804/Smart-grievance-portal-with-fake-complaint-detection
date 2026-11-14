@@ -15,6 +15,14 @@ async function main() {
   await mongoose.connect(config.MONGO_URI);
   console.log('Connected to MongoDB');
 
+  try {
+    const { seed } = await import('@nagrik-setu/domain');
+    const seedResult = await seed();
+    console.log('Master data and staff accounts initialized:', seedResult);
+  } catch (err) {
+    console.warn('Master data auto-seed notice:', err);
+  }
+
   const app = createApp({ clientOrigin: config.CLIENT_ORIGIN });
   const port = config.PORT ?? 4000;
 

@@ -21,7 +21,7 @@ export { createComplaint, type CreateComplaintOpts } from './services/complaint'
 export { transition } from './services/transition';
 export { findWardForPoint } from './services/ward';
 export { toPublicDTO, toOwnerDTO, PRIVATE_FIELDS, type ComplaintPublicDTO, type ComplaintOwnerDTO } from './services/dto';
-export { seed } from './services/seed';
+export { seed, seedDemoUsers } from './services/seed';
 
 // Services — Media
 export {

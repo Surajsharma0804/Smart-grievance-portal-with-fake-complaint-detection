@@ -1,32 +1,30 @@
 import { NextResponse } from 'next/server';
 
+const API_URL = process.env.API_BASE_URL || 'http://localhost:4000';
+
 export async function GET() {
   try {
-    // If Express API is running, we can fetch live data or return synthesized public stats
-    const stats = {
-      totalGrievances: 1248,
-      resolved: 982,
-      inProgress: 184,
-      avgResolutionHours: 36,
-      byCategory: [
-        { category: 'ROADS', count: 420 },
-        { category: 'SANITATION', count: 350 },
-        { category: 'STREET_LIGHTING', count: 210 },
-        { category: 'WATER', count: 168 },
-        { category: 'OTHER', count: 100 },
-      ],
-      updatedAt: new Date().toISOString(),
-    };
+    const res = await fetch(`${API_URL}/public/stats`, {
+      cache: 'no-store',
+    });
 
-    return NextResponse.json(stats, {
+    if (!res.ok) {
+      return NextResponse.json(
+        { error: 'Backend API returned an error' },
+        { status: res.status },
+      );
+    }
+
+    const data = await res.json();
+    return NextResponse.json(data, {
       headers: {
         'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
       },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { error: 'Failed to fetch public statistics' },
-      { status: 500 },
+      { error: 'Failed to fetch public statistics from backend' },
+      { status: 502 },
     );
   }
 }

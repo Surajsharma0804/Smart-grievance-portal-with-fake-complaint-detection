@@ -49,7 +49,7 @@ export async function submitComplaintAction(
     anonymous: formData.get('anonymous') === 'on',
     mediaKeys: (formData.get('mediaKeys') as string)?.split(',').filter(Boolean).length
       ? (formData.get('mediaKeys') as string).split(',').filter(Boolean)
-      : ['placeholder-photo.jpg'],
+      : [],
     idempotencyKey: formData.get('idempotencyKey') as string,
     location: {
       type: 'Point' as const,

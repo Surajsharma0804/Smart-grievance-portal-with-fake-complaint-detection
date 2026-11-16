@@ -1,2 +1,3 @@
-import ListSlot from './page';
-export default ListSlot;
+export default function ListDefault() {
+  return null;
+}

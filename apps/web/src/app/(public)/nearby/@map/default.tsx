@@ -1,2 +1,3 @@
-import MapSlot from './page';
-export default MapSlot;
+export default function MapDefault() {
+  return null;
+}

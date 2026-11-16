@@ -47,21 +47,6 @@ complaintRouter.get('/complaints/mine', ...auth, async (req: Request, res: Respo
   });
 });
 
-complaintRouter.get('/complaints/:publicId', ...optAuth, async (req: Request, res: Response) => {
-  const complaint = await Complaint.findOne({ publicId: req.params.publicId });
-  if (!complaint) {
-    res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Complaint not found' } });
-    return;
-  }
-
-  const isOwner = req.user ? complaint.reporterId.toString() === req.user.sub : false;
-  if (isOwner) {
-    res.json({ complaint: toOwnerDTO(complaint) });
-    return;
-  }
-  res.json({ complaint: toPublicDTO(complaint) });
-});
-
 complaintRouter.get('/complaints/nearby', ...optAuth, async (req: Request, res: Response) => {
   const lng = Number(req.query.lng);
   const lat = Number(req.query.lat);
@@ -87,6 +72,21 @@ complaintRouter.get('/complaints/nearby', ...optAuth, async (req: Request, res: 
   res.json({
     complaints: complaints.map((c) => toPublicDTO(c)),
   });
+});
+
+complaintRouter.get('/complaints/:publicId', ...optAuth, async (req: Request, res: Response) => {
+  const complaint = await Complaint.findOne({ publicId: req.params.publicId });
+  if (!complaint) {
+    res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Complaint not found' } });
+    return;
+  }
+
+  const isOwner = req.user ? complaint.reporterId.toString() === req.user.sub : false;
+  if (isOwner) {
+    res.json({ complaint: toOwnerDTO(complaint) });
+    return;
+  }
+  res.json({ complaint: toPublicDTO(complaint) });
 });
 
 // ---------------------------------------------------------------------------

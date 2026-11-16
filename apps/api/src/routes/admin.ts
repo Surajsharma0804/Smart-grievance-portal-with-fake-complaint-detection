@@ -223,7 +223,7 @@ adminRouter.put('/admin/users/:id', ...adminAuth, async (req: Request, res: Resp
 // Analytics & Export
 // ---------------------------------------------------------------------------
 
-adminRouter.get('/admin/analytics/summary', ...adminAuth, async (_req: Request, res: Response) => {
+adminRouter.get('/admin/analytics/summary', ...staffReadAuth, async (_req: Request, res: Response) => {
   const [total, statusAgg, categoryAgg, overdueCount] = await Promise.all([
     Complaint.countDocuments(),
     Complaint.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
@@ -254,7 +254,7 @@ adminRouter.get('/admin/analytics/summary', ...adminAuth, async (_req: Request, 
   });
 });
 
-adminRouter.get('/admin/export/complaints.csv', ...adminAuth, async (_req: Request, res: Response) => {
+adminRouter.get('/admin/export/complaints.csv', ...staffReadAuth, async (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="complaints-export.csv"');
 

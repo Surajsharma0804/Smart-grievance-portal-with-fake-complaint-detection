@@ -1,8 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, Link } from 'react-router';
-import { useState, useEffect, createContext, useContext } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router';
+import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
 
-// --- Auth Context ---
+// ─────────────────────────────────────────────────────────────────────────────
+// Auth Context
+// ─────────────────────────────────────────────────────────────────────────────
 interface User {
   id: string;
   name: string;
@@ -68,28 +70,103 @@ function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// --- Shared Components ---
-function StatusBadge({ status }: { status: string }) {
-  const colorMap: Record<string, string> = {
-    SUBMITTED: 'bg-gray-100 text-gray-800 border-gray-200',
-    ANALYZING: 'bg-blue-50 text-blue-700 border-blue-200',
-    ROUTED: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-    ASSIGNED: 'bg-cyan-50 text-cyan-700 border-cyan-200',
-    IN_PROGRESS: 'bg-amber-50 text-amber-700 border-amber-200',
-    RESOLVED: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    CLOSED: 'bg-slate-100 text-slate-600 border-slate-200',
-    NEEDS_REVIEW: 'bg-rose-50 text-rose-700 border-rose-200',
-    LINKED_DUPLICATE: 'bg-purple-50 text-purple-700 border-purple-200',
+// ─────────────────────────────────────────────────────────────────────────────
+// Toast System
+// ─────────────────────────────────────────────────────────────────────────────
+interface Toast {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
+
+const ToastContext = createContext<{
+  addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+}>({ addToast: () => {} });
+
+function useToast() {
+  return useContext(ToastContext);
+}
+
+function ToastProvider({ children }: { children: ReactNode }) {
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const addToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    const id = crypto.randomUUID();
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4000);
   };
-  const cls = colorMap[status] || 'bg-gray-50 text-gray-700 border-gray-200';
+
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${cls}`}>
-      {status}
+    <ToastContext.Provider value={{ addToast }}>
+      {children}
+      <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-sm">
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            className={`px-4 py-3 rounded-lg shadow-lg text-sm font-medium text-white animate-slide-in ${
+              t.type === 'success'
+                ? 'bg-emerald-600'
+                : t.type === 'error'
+                ? 'bg-red-600'
+                : 'bg-blue-600'
+            }`}
+          >
+            {t.message}
+          </div>
+        ))}
+      </div>
+    </ToastContext.Provider>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared UI Components
+// ─────────────────────────────────────────────────────────────────────────────
+
+const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string }> = {
+  SUBMITTED: { label: 'Submitted', bg: 'bg-gray-100', text: 'text-gray-800', border: 'border-gray-200' },
+  ANALYZING: { label: 'Analyzing', bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+  ROUTED: { label: 'Routed', bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' },
+  ASSIGNED: { label: 'Assigned', bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
+  IN_PROGRESS: { label: 'In Progress', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
+  RESOLVED: { label: 'Resolved', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+  CLOSED: { label: 'Closed', bg: 'bg-slate-100', text: 'text-slate-600', border: 'border-slate-200' },
+  NEEDS_REVIEW: { label: 'Needs Review', bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200' },
+  LINKED_DUPLICATE: { label: 'Duplicate', bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
+  REOPENED: { label: 'Reopened', bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
+};
+
+function StatusBadge({ status }: { status: string }) {
+  const cfg = STATUS_CONFIG[status] || { label: status, bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
+      {cfg.label}
     </span>
   );
 }
 
-// --- Login Page ---
+function Spinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+  const sizeClass = size === 'sm' ? 'w-4 h-4' : size === 'lg' ? 'w-8 h-8' : 'w-6 h-6';
+  return (
+    <div className={`${sizeClass} border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin`} />
+  );
+}
+
+function EmptyState({ icon, title, subtitle }: { icon: string; title: string; subtitle: string }) {
+  return (
+    <div className="p-16 text-center bg-white border border-slate-200 rounded-xl">
+      <div className="text-4xl mb-4">{icon}</div>
+      <p className="text-base font-medium text-slate-700">{title}</p>
+      <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">{subtitle}</p>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Login Page
+// ─────────────────────────────────────────────────────────────────────────────
 function LoginPage() {
   const { login, user } = useAuth();
   const navigate = useNavigate();
@@ -117,82 +194,76 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-50 p-4">
-      <div className="w-full max-w-sm p-8 border border-slate-200 rounded-xl bg-white shadow-sm space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Staff Console</h1>
-          <p className="text-sm text-slate-500 mt-1">Sign in with officer or admin credentials.</p>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
+      <div className="w-full max-w-sm p-8 border border-slate-200 rounded-2xl bg-white shadow-lg space-y-6">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 rounded-xl mb-4">
+            <span className="text-2xl text-white">🏛️</span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Nagrik Setu</h1>
+          <p className="text-sm text-slate-500 mt-1">Staff & Administration Console</p>
         </div>
+
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-            {error}
+          <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex items-center gap-2">
+            <span>⚠️</span> {error}
           </div>
         )}
 
-        {/* 1-Click Role Login for verification */}
         <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-2">
-          <p className="font-semibold text-slate-700">Quick sign-in credentials:</p>
+          <p className="font-semibold text-slate-700">Quick sign-in (demo credentials):</p>
           <div className="grid grid-cols-1 gap-1.5">
-            <button
-              type="button"
-              onClick={() => autofill('officer@test.com')}
-              className="p-1.5 text-left bg-white border border-slate-200 rounded hover:border-blue-400 hover:bg-blue-50 transition-colors flex justify-between"
-            >
-              <span className="font-medium text-slate-800">Ward Officer</span>
-              <span className="text-slate-400">officer@test.com</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => autofill('admin@test.com')}
-              className="p-1.5 text-left bg-white border border-slate-200 rounded hover:border-blue-400 hover:bg-blue-50 transition-colors flex justify-between"
-            >
-              <span className="font-medium text-slate-800">Dept Admin</span>
-              <span className="text-slate-400">admin@test.com</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => autofill('reviewer@test.com')}
-              className="p-1.5 text-left bg-white border border-slate-200 rounded hover:border-blue-400 hover:bg-blue-50 transition-colors flex justify-between"
-            >
-              <span className="font-medium text-slate-800">Reviewer</span>
-              <span className="text-slate-400">reviewer@test.com</span>
-            </button>
+            {[
+              { email: 'officer@test.com', label: 'Ward Officer', badge: 'OFFICER', color: 'text-blue-600' },
+              { email: 'admin@test.com', label: 'Dept Admin', badge: 'DEPT_ADMIN', color: 'text-purple-600' },
+              { email: 'reviewer@test.com', label: 'Reviewer', badge: 'REVIEWER', color: 'text-amber-600' },
+            ].map((cred) => (
+              <button
+                key={cred.email}
+                type="button"
+                onClick={() => autofill(cred.email)}
+                className="p-2 text-left bg-white border border-slate-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all flex justify-between items-center"
+              >
+                <span className="font-medium text-slate-800">{cred.label}</span>
+                <span className={`text-[10px] font-semibold ${cred.color}`}>{cred.badge}</span>
+              </button>
+            ))}
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
-              Email
-            </label>
+            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">Email</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-              Password
-            </label>
+            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 text-sm transition-colors"
+            className="w-full py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 text-sm transition-colors shadow-sm"
           >
-            {submitting ? 'Authenticating...' : 'Sign In'}
+            {submitting ? (
+              <span className="inline-flex items-center gap-2"><Spinner size="sm" /> Authenticating...</span>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
       </div>
@@ -204,8 +275,9 @@ function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen text-sm text-slate-500">
-        Loading staff session...
+      <div className="flex items-center justify-center min-h-screen gap-3">
+        <Spinner size="lg" />
+        <span className="text-sm text-slate-500">Loading staff session...</span>
       </div>
     );
   }
@@ -213,10 +285,13 @@ function RequireAuth({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-// --- Layout ---
+// ─────────────────────────────────────────────────────────────────────────────
+// Dashboard Layout with Active Nav
+// ─────────────────────────────────────────────────────────────────────────────
 function DashboardLayout() {
   const { user, login, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
@@ -224,6 +299,7 @@ function DashboardLayout() {
   };
 
   const handleQuickSwitch = async (email: string) => {
+    await logout();
     await login(email, 'password123');
     window.location.reload();
   };
@@ -236,91 +312,89 @@ function DashboardLayout() {
     { to: '/admin/users', label: 'User Directory', icon: '👥' },
   ];
 
+  const isActive = (path: string) => {
+    const current = location.pathname;
+    if (path === '/queue') return current === '/queue' || current.startsWith('/queue/');
+    return current.startsWith(path);
+  };
+
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <aside className="w-64 border-r border-slate-200 bg-white p-5 flex flex-col justify-between">
-        <div className="space-y-6">
-          <div>
-            <h2 className="font-bold text-lg text-slate-900 tracking-tight">Nagrik Setu</h2>
-            <p className="text-xs text-slate-500">Staff & Review Console</p>
-          </div>
-          <nav className="space-y-1 text-sm font-medium">
-            {NAV.map((n) => (
-              <Link
-                key={n.to}
-                to={n.to}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
-              >
-                <span>{n.icon}</span>
-                <span>{n.label}</span>
-              </Link>
-            ))}
-          </nav>
+      <aside className="w-64 border-r border-slate-200 bg-white flex flex-col">
+        <div className="p-5 border-b border-slate-100">
+          <h2 className="font-bold text-lg text-slate-900 tracking-tight">Nagrik Setu</h2>
+          <p className="text-xs text-slate-500">Staff & Review Console</p>
         </div>
-        <div className="border-t border-slate-100 pt-4 space-y-3">
-          <div className="text-xs text-slate-500">
-            <p className="font-semibold text-slate-900">{user?.name}</p>
-            <p className="truncate text-slate-500">{user?.email}</p>
-            <span className="inline-block mt-1 px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-semibold border border-blue-200">
+
+        <nav className="flex-1 p-3 space-y-0.5">
+          {NAV.map((n) => (
+            <Link
+              key={n.to}
+              to={n.to}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                isActive(n.to)
+                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent'
+              }`}
+            >
+              <span>{n.icon}</span>
+              <span>{n.label}</span>
+            </Link>
+          ))}
+        </nav>
+
+        <div className="border-t border-slate-100 p-4 space-y-3">
+          <div className="text-xs">
+            <p className="font-semibold text-slate-900 truncate">{user?.name}</p>
+            <p className="text-slate-500 truncate">{user?.email}</p>
+            <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold border ${
+              user?.role === 'DEPT_ADMIN' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+              user?.role === 'REVIEWER' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+              'bg-blue-50 text-blue-700 border-blue-200'
+            }`}>
               {user?.role}
             </span>
           </div>
 
-          {/* 1-Click Role Switcher */}
           <div className="p-2 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
             <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Switch Persona</p>
             <div className="grid grid-cols-3 gap-1">
-              <button
-                type="button"
-                onClick={() => handleQuickSwitch('officer@test.com')}
-                title="Switch to Ward Officer"
-                className={`py-1 text-[11px] rounded font-medium transition-colors ${
-                  user?.role === 'OFFICER'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                Officer
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickSwitch('admin@test.com')}
-                title="Switch to Dept Admin"
-                className={`py-1 text-[11px] rounded font-medium transition-colors ${
-                  user?.role === 'DEPT_ADMIN'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickSwitch('reviewer@test.com')}
-                title="Switch to Reviewer"
-                className={`py-1 text-[11px] rounded font-medium transition-colors ${
-                  user?.role === 'REVIEWER'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                Reviewer
-              </button>
+              {[
+                { email: 'officer@test.com', label: 'Officer', role: 'OFFICER' },
+                { email: 'admin@test.com', label: 'Admin', role: 'DEPT_ADMIN' },
+                { email: 'reviewer@test.com', label: 'Reviewer', role: 'REVIEWER' },
+              ].map((p) => (
+                <button
+                  key={p.email}
+                  type="button"
+                  onClick={() => handleQuickSwitch(p.email)}
+                  title={`Switch to ${p.label}`}
+                  className={`py-1 text-[11px] rounded font-medium transition-colors ${
+                    user?.role === p.role
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
             </div>
           </div>
 
           <button
             onClick={handleLogout}
-            className="w-full text-left text-xs text-red-600 hover:text-red-700 hover:underline pt-1"
+            className="w-full text-left text-xs text-red-600 hover:text-red-700 hover:underline"
           >
             Sign out
           </button>
         </div>
       </aside>
+
       <main className="flex-1 p-8 overflow-y-auto">
         <Routes>
           <Route index element={<Navigate to="queue" replace />} />
           <Route path="queue" element={<QueuePage />} />
+          <Route path="queue/:id" element={<ComplaintDetailPage />} />
           <Route path="review" element={<ReviewPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="admin/departments" element={<DeptPage />} />
@@ -331,32 +405,94 @@ function DashboardLayout() {
   );
 }
 
-// --- Features ---
+// ─────────────────────────────────────────────────────────────────────────────
+// VALID TRANSITIONS MAP (matches shared/transitions.ts)
+// ─────────────────────────────────────────────────────────────────────────────
+const TRANSITIONS: Record<string, string[]> = {
+  SUBMITTED: ['ANALYZING'],
+  ANALYZING: ['NEEDS_REVIEW', 'ROUTED', 'LINKED_DUPLICATE'],
+  NEEDS_REVIEW: ['ROUTED', 'LINKED_DUPLICATE'],
+  ROUTED: ['ASSIGNED'],
+  ASSIGNED: ['IN_PROGRESS'],
+  IN_PROGRESS: ['RESOLVED'],
+  RESOLVED: ['CLOSED', 'REOPENED'],
+  REOPENED: ['ASSIGNED'],
+  CLOSED: [],
+  LINKED_DUPLICATE: [],
+};
 
+const TRANSITION_ACTIONS: Record<string, { label: string; color: string; icon: string }> = {
+  ANALYZING: { label: 'Analyze', color: 'bg-blue-600 hover:bg-blue-700', icon: '🔬' },
+  NEEDS_REVIEW: { label: 'Flag for Review', color: 'bg-rose-600 hover:bg-rose-700', icon: '🚩' },
+  ROUTED: { label: 'Route', color: 'bg-indigo-600 hover:bg-indigo-700', icon: '📨' },
+  LINKED_DUPLICATE: { label: 'Mark Duplicate', color: 'bg-purple-600 hover:bg-purple-700', icon: '🔗' },
+  ASSIGNED: { label: 'Assign', color: 'bg-cyan-600 hover:bg-cyan-700', icon: '👤' },
+  IN_PROGRESS: { label: 'Start Work', color: 'bg-blue-600 hover:bg-blue-700', icon: '🔧' },
+  RESOLVED: { label: 'Resolve', color: 'bg-emerald-600 hover:bg-emerald-700', icon: '✅' },
+  CLOSED: { label: 'Close', color: 'bg-slate-600 hover:bg-slate-700', icon: '🔒' },
+  REOPENED: { label: 'Reopen', color: 'bg-orange-600 hover:bg-orange-700', icon: '🔓' },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Officer Queue Page
+// ─────────────────────────────────────────────────────────────────────────────
 function QueuePage() {
+  const navigate = useNavigate();
+  const { addToast } = useToast();
   const [complaints, setComplaints] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchQueue = () => {
+  const fetchQueue = useCallback(() => {
     setLoading(true);
     fetch('/api/officer/queue', { credentials: 'include' })
       .then((r) => (r.ok ? r.json() : { complaints: [] }))
       .then((data) => setComplaints(data.complaints || []))
       .catch(() => setComplaints([]))
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchQueue();
   }, []);
 
-  const handleUpdateStatus = async (id: string, newStatus: string) => {
-    await fetch(`/api/complaints/${id}/status`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ status: newStatus, note: 'Status updated via Staff Console' }),
-    });
+  useEffect(() => { fetchQueue(); }, [fetchQueue]);
+
+  const handleQuickAction = async (e: React.MouseEvent, id: string, newStatus: string) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch(`/api/complaints/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status: newStatus, note: `Status → ${newStatus} via Staff Console` }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        addToast(err?.error?.message || 'Action failed', 'error');
+        return;
+      }
+      addToast(`Complaint updated to ${STATUS_CONFIG[newStatus]?.label || newStatus}`, 'success');
+      fetchQueue();
+    } catch {
+      addToast('Network error', 'error');
+    }
+  };
+
+  // Fast-track: SUBMITTED → ANALYZING → ROUTED → ASSIGNED in sequence
+  const handleFastTrack = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    const steps = ['ANALYZING', 'ROUTED', 'ASSIGNED'];
+    for (const status of steps) {
+      const res = await fetch(`/api/complaints/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status, note: `Fast-tracked: → ${status}` }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        addToast(err?.error?.message || `Failed at step ${status}`, 'error');
+        fetchQueue();
+        return;
+      }
+    }
+    addToast('Complaint fast-tracked → Assigned', 'success');
     fetchQueue();
   };
 
@@ -366,24 +502,27 @@ function QueuePage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Officer Work Queue</h1>
           <p className="text-sm text-slate-500 mt-1">
-            Grievances prioritized by severity and SLA deadline.
+            {complaints.length} grievance{complaints.length !== 1 ? 's' : ''} in queue — click any row to view details.
           </p>
         </div>
         <button
           onClick={fetchQueue}
-          className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm"
+          className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm inline-flex items-center gap-2"
         >
-          🔄 Refresh
+          <span>🔄</span> Refresh
         </button>
       </div>
 
       {loading ? (
-        <div className="p-8 text-center text-sm text-slate-500">Loading queue...</div>
-      ) : complaints.length === 0 ? (
-        <div className="p-12 text-center bg-white border border-slate-200 rounded-xl space-y-2">
-          <p className="text-base font-medium text-slate-700">No open complaints assigned</p>
-          <p className="text-xs text-slate-500">All assigned grievances have been resolved or routed.</p>
+        <div className="flex items-center justify-center p-16 gap-3">
+          <Spinner /> <span className="text-sm text-slate-500">Loading queue...</span>
         </div>
+      ) : complaints.length === 0 ? (
+        <EmptyState
+          icon="📭"
+          title="Queue is clear"
+          subtitle="No open grievances assigned to you or awaiting action."
+        />
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
           <table className="w-full text-left text-sm">
@@ -393,45 +532,64 @@ function QueuePage() {
                 <th className="px-4 py-3">Title & Category</th>
                 <th className="px-4 py-3">Priority</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Actions</th>
+                <th className="px-4 py-3">Created</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {complaints.map((c) => (
-                <tr key={c._id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-mono font-medium text-xs text-blue-600">{c.publicId}</td>
-                  <td className="px-4 py-3">
-                    <p className="font-medium text-slate-900">{c.title}</p>
-                    <span className="text-xs text-slate-500">{c.category || 'General'}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded text-xs font-semibold bg-amber-50 text-amber-700">
-                      P{c.priority || 0}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusBadge status={c.status} />
-                  </td>
-                  <td className="px-4 py-3 space-x-2">
-                    {c.status === 'ASSIGNED' && (
-                      <button
-                        onClick={() => handleUpdateStatus(c._id, 'IN_PROGRESS')}
-                        className="px-2.5 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
-                      >
-                        Start Work
-                      </button>
-                    )}
-                    {c.status === 'IN_PROGRESS' && (
-                      <button
-                        onClick={() => handleUpdateStatus(c._id, 'RESOLVED')}
-                        className="px-2.5 py-1 bg-emerald-600 text-white rounded text-xs hover:bg-emerald-700"
-                      >
-                        Resolve
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {complaints.map((c) => {
+                const nextStatuses = TRANSITIONS[c.status] || [];
+                return (
+                  <tr
+                    key={c._id}
+                    onClick={() => navigate(`/queue/${c._id}`)}
+                    className="hover:bg-blue-50/50 cursor-pointer transition-colors"
+                  >
+                    <td className="px-4 py-3 font-mono font-medium text-xs text-blue-600">{c.publicId}</td>
+                    <td className="px-4 py-3">
+                      <p className="font-medium text-slate-900 truncate max-w-xs">{c.title}</p>
+                      <span className="text-xs text-slate-500">{c.category || c.citizenCategory || 'General'}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                        (c.priority || 0) >= 3 ? 'bg-red-50 text-red-700' :
+                        (c.priority || 0) >= 2 ? 'bg-amber-50 text-amber-700' :
+                        'bg-slate-50 text-slate-600'
+                      }`}>
+                        P{c.priority || 0}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3"><StatusBadge status={c.status} /></td>
+                    <td className="px-4 py-3 text-xs text-slate-500">
+                      {new Date(c.createdAt).toLocaleDateString('en-IN')}
+                    </td>
+                    <td className="px-4 py-3 text-right space-x-1">
+                      {c.status === 'SUBMITTED' && (
+                        <button
+                          onClick={(e) => handleFastTrack(e, c._id)}
+                          className="px-2.5 py-1 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700 font-medium"
+                          title="Analyze → Route → Assign in one step"
+                        >
+                          ⚡ Fast Track
+                        </button>
+                      )}
+                      {c.status !== 'SUBMITTED' && nextStatuses.slice(0, 1).map((ns: string) => {
+                        const action = TRANSITION_ACTIONS[ns];
+                        if (!action) return null;
+                        return (
+                          <button
+                            key={ns}
+                            onClick={(e) => handleQuickAction(e, c._id, ns)}
+                            className={`px-2.5 py-1 text-white rounded text-xs font-medium ${action.color}`}
+                          >
+                            {action.icon} {action.label}
+                          </button>
+                        );
+                      })}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -440,15 +598,299 @@ function QueuePage() {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Complaint Detail Page (slide-in from queue)
+// ─────────────────────────────────────────────────────────────────────────────
+function ComplaintDetailPage() {
+  const navigate = useNavigate();
+  const { addToast } = useToast();
+  const { user } = useAuth();
+  const location = useLocation();
+  const complaintId = location.pathname.split('/').pop();
+
+  const [complaint, setComplaint] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const fetchDetail = useCallback(() => {
+    if (!complaintId) return;
+    setLoading(true);
+    fetch(`/api/officer/queue`, { credentials: 'include' })
+      .then((r) => r.json())
+      .then((data) => {
+        const found = (data.complaints || []).find((c: any) => c._id === complaintId);
+        setComplaint(found || null);
+      })
+      .catch(() => setComplaint(null))
+      .finally(() => setLoading(false));
+  }, [complaintId]);
+
+  useEffect(() => { fetchDetail(); }, [fetchDetail]);
+
+  const handleTransition = async (newStatus: string) => {
+    if (!complaint) return;
+    setActionLoading(true);
+    try {
+      const res = await fetch(`/api/complaints/${complaint._id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status: newStatus, note: `Status → ${newStatus} by ${user?.name}` }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        addToast(err?.error?.message || 'Transition failed', 'error');
+      } else {
+        addToast(`Updated to ${STATUS_CONFIG[newStatus]?.label || newStatus}`, 'success');
+        fetchDetail();
+      }
+    } catch {
+      addToast('Network error', 'error');
+    }
+    setActionLoading(false);
+  };
+
+  const handleFastTrack = async () => {
+    if (!complaint) return;
+    setActionLoading(true);
+    const steps = ['ANALYZING', 'ROUTED', 'ASSIGNED'];
+    for (const status of steps) {
+      const res = await fetch(`/api/complaints/${complaint._id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status, note: `Fast-tracked: → ${status}` }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        addToast(err?.error?.message || `Failed at step ${status}`, 'error');
+        fetchDetail();
+        setActionLoading(false);
+        return;
+      }
+    }
+    addToast('Fast-tracked → Assigned', 'success');
+    fetchDetail();
+    setActionLoading(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-16 gap-3">
+        <Spinner /> <span className="text-sm text-slate-500">Loading complaint details...</span>
+      </div>
+    );
+  }
+
+  if (!complaint) {
+    return (
+      <div className="space-y-4">
+        <button onClick={() => navigate('/queue')} className="text-sm text-blue-600 hover:underline">
+          ← Back to Queue
+        </button>
+        <EmptyState icon="🔍" title="Complaint not found" subtitle="This complaint may have been resolved or is no longer in your queue." />
+      </div>
+    );
+  }
+
+  const nextStatuses = TRANSITIONS[complaint.status] || [];
+
+  return (
+    <div className="space-y-6 max-w-4xl">
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <button onClick={() => navigate('/queue')} className="text-sm text-blue-600 hover:underline mb-3 inline-block">
+            ← Back to Queue
+          </button>
+          <div className="flex items-center gap-3 mb-1">
+            <span className="font-mono text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{complaint.publicId}</span>
+            <StatusBadge status={complaint.status} />
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900">{complaint.title}</h1>
+        </div>
+        <span className={`px-3 py-1 rounded-lg text-sm font-bold ${
+          (complaint.priority || 0) >= 3 ? 'bg-red-100 text-red-800' :
+          (complaint.priority || 0) >= 2 ? 'bg-amber-100 text-amber-800' :
+          'bg-slate-100 text-slate-700'
+        }`}>
+          Priority {complaint.priority || 0}
+        </span>
+      </div>
+
+      {/* Actions Bar */}
+      <div className="bg-white border border-slate-200 rounded-xl p-4 flex flex-wrap items-center gap-3">
+        <span className="text-sm font-medium text-slate-700">Actions:</span>
+        {complaint.status === 'SUBMITTED' && (
+          <button
+            onClick={handleFastTrack}
+            disabled={actionLoading}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 inline-flex items-center gap-1.5"
+          >
+            ⚡ Fast Track (Analyze → Route → Assign)
+          </button>
+        )}
+        {nextStatuses.map((ns: string) => {
+          const action = TRANSITION_ACTIONS[ns];
+          if (!action) return null;
+          return (
+            <button
+              key={ns}
+              onClick={() => handleTransition(ns)}
+              disabled={actionLoading}
+              className={`px-4 py-2 text-white rounded-lg text-sm font-medium disabled:opacity-50 inline-flex items-center gap-1.5 ${action.color}`}
+            >
+              {action.icon} {action.label}
+            </button>
+          );
+        })}
+        {nextStatuses.length === 0 && complaint.status !== 'SUBMITTED' && (
+          <span className="text-sm text-slate-500 italic">No further transitions available (terminal state).</span>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Info */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Description */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <h3 className="text-sm font-semibold text-slate-500 uppercase mb-3">Description</h3>
+            <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+              {complaint.description || 'No detailed description provided.'}
+            </p>
+          </div>
+
+          {/* Status History Timeline */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <h3 className="text-sm font-semibold text-slate-500 uppercase mb-4">Status Timeline</h3>
+            {(!complaint.statusHistory || complaint.statusHistory.length === 0) ? (
+              <p className="text-sm text-slate-400 italic">No status transitions recorded yet.</p>
+            ) : (
+              <ol className="relative border-l-2 border-slate-200 ml-2 space-y-4">
+                {complaint.statusHistory.map((entry: any, i: number) => (
+                  <li key={i} className="ml-6">
+                    <div className={`absolute -left-[9px] w-4 h-4 rounded-full border-2 border-white ${
+                      STATUS_CONFIG[entry.to]?.bg?.replace('bg-', 'bg-') || 'bg-slate-300'
+                    }`} style={{
+                      backgroundColor: entry.to === 'RESOLVED' ? '#059669' :
+                        entry.to === 'IN_PROGRESS' ? '#d97706' :
+                        entry.to === 'ASSIGNED' ? '#0891b2' :
+                        entry.to === 'ROUTED' ? '#4f46e5' :
+                        entry.to === 'ANALYZING' ? '#2563eb' : '#94a3b8'
+                    }} />
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <StatusBadge status={entry.to} />
+                      <span className="text-[10px] text-slate-400">
+                        from {STATUS_CONFIG[entry.from]?.label || entry.from}
+                      </span>
+                    </div>
+                    {entry.note && (
+                      <p className="text-xs text-slate-600 mt-0.5">{entry.note}</p>
+                    )}
+                    <time className="text-[10px] text-slate-400">
+                      {new Date(entry.at).toLocaleString('en-IN')}
+                    </time>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        </div>
+
+        {/* Sidebar Info */}
+        <div className="space-y-4">
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <h3 className="text-sm font-semibold text-slate-500 uppercase mb-3">Details</h3>
+            <dl className="space-y-3 text-sm">
+              <div>
+                <dt className="text-slate-500 text-xs">Category</dt>
+                <dd className="font-medium text-slate-900">{complaint.category || complaint.citizenCategory || 'Unassigned'}</dd>
+              </div>
+              <div>
+                <dt className="text-slate-500 text-xs">Department</dt>
+                <dd className="font-medium text-slate-900">{complaint.departmentId?.name || 'Not routed'}</dd>
+              </div>
+              <div>
+                <dt className="text-slate-500 text-xs">Ward</dt>
+                <dd className="font-medium text-slate-900">{complaint.wardId?.name || complaint.wardId?.code || 'Unknown'}</dd>
+              </div>
+              <div>
+                <dt className="text-slate-500 text-xs">Location</dt>
+                <dd className="font-medium text-slate-900 text-xs font-mono">
+                  {complaint.location?.coordinates
+                    ? `${complaint.location.coordinates[1]?.toFixed(5)}, ${complaint.location.coordinates[0]?.toFixed(5)}`
+                    : 'Not set'}
+                </dd>
+              </div>
+              {complaint.address && (
+                <div>
+                  <dt className="text-slate-500 text-xs">Address</dt>
+                  <dd className="font-medium text-slate-900">{complaint.address}</dd>
+                </div>
+              )}
+              <div>
+                <dt className="text-slate-500 text-xs">Created</dt>
+                <dd className="font-medium text-slate-900">{new Date(complaint.createdAt).toLocaleString('en-IN')}</dd>
+              </div>
+              {complaint.slaDueAt && (
+                <div>
+                  <dt className="text-slate-500 text-xs">SLA Due</dt>
+                  <dd className={`font-medium ${
+                    new Date(complaint.slaDueAt) < new Date() ? 'text-red-600' : 'text-slate-900'
+                  }`}>
+                    {new Date(complaint.slaDueAt).toLocaleString('en-IN')}
+                    {new Date(complaint.slaDueAt) < new Date() && ' ⚠️ OVERDUE'}
+                  </dd>
+                </div>
+              )}
+              <div>
+                <dt className="text-slate-500 text-xs">Upvotes</dt>
+                <dd className="font-medium text-slate-900">👍 {complaint.upvotes || 0}</dd>
+              </div>
+              {complaint.anonymous && (
+                <div>
+                  <dt className="text-slate-500 text-xs">Anonymous</dt>
+                  <dd className="font-medium text-amber-700">Yes — identity hidden</dd>
+                </div>
+              )}
+            </dl>
+          </div>
+
+          {/* Media */}
+          {complaint.media && complaint.media.length > 0 && (
+            <div className="bg-white border border-slate-200 rounded-xl p-5">
+              <h3 className="text-sm font-semibold text-slate-500 uppercase mb-3">
+                Evidence Photos ({complaint.media.length})
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                {complaint.media.map((m: any, i: number) => (
+                  <div key={i} className="border rounded-lg p-1 bg-slate-50 text-center">
+                    <p className="text-[10px] text-slate-500 truncate">{m.kind || 'photo'}</p>
+                    <p className="text-[10px] text-slate-400 truncate">{m.key || 'media'}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Review Workbench
+// ─────────────────────────────────────────────────────────────────────────────
 function ReviewPage() {
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const isReviewer = user?.role === 'REVIEWER' || user?.role === 'DEPT_ADMIN';
 
-  const fetchTasks = () => {
+  const fetchTasks = useCallback(() => {
     setLoading(true);
     setError(null);
     fetch('/api/admin/review-tasks?status=pending', { credentials: 'include' })
@@ -462,11 +904,9 @@ function ReviewPage() {
       .then((data) => setTasks(data.tasks || []))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchTasks();
   }, []);
+
+  useEffect(() => { fetchTasks(); }, [fetchTasks]);
 
   const handleDecision = async (id: string, action: string, reason: string) => {
     const res = await fetch(`/api/admin/review-tasks/${id}/decide`, {
@@ -477,7 +917,9 @@ function ReviewPage() {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => null);
-      alert(err?.error?.message || 'Decision failed');
+      addToast(err?.error?.message || 'Decision failed', 'error');
+    } else {
+      addToast(`Review decision: ${action}`, 'success');
     }
     fetchTasks();
   };
@@ -493,33 +935,35 @@ function ReviewPage() {
         </div>
         <button
           onClick={fetchTasks}
-          className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm"
+          className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm inline-flex items-center gap-2"
         >
-          🔄 Refresh
+          <span>🔄</span> Refresh
         </button>
       </div>
 
       {!isReviewer && (
-        <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs flex justify-between items-center">
-          <span>ℹ️ Viewing Reviewer Workbench in read-only mode as <strong>{user?.name || 'Officer'}</strong>. Adjudicating fraud decisions requires the <strong>Reviewer</strong> role (reviewer@test.com).</span>
+        <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs flex items-center gap-2">
+          <span>ℹ️</span>
+          <span>Viewing in read-only mode as <strong>{user?.name || 'Officer'}</strong>. Adjudicating decisions requires the <strong>Reviewer</strong> or <strong>Admin</strong> role.</span>
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
-          {error}
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-center gap-2">
+          <span>⚠️</span> {error}
         </div>
       )}
 
       {loading ? (
-        <div className="p-8 text-center text-sm text-slate-500">Loading review workbench...</div>
-      ) : tasks.length === 0 ? (
-        <div className="p-12 text-center bg-white border border-slate-200 rounded-xl space-y-2">
-          <p className="text-base font-medium text-slate-700">Review queue is clean</p>
-          <p className="text-xs text-slate-500">
-            No complaints currently flagged by AI for human fraud verification. Legitimate complaints proceed directly to the Officer Queue.
-          </p>
+        <div className="flex items-center justify-center p-16 gap-3">
+          <Spinner /> <span className="text-sm text-slate-500">Loading review workbench...</span>
         </div>
+      ) : tasks.length === 0 ? (
+        <EmptyState
+          icon="✨"
+          title="Review queue is clean"
+          subtitle="No complaints currently flagged for human verification. Legitimate complaints proceed directly to the Officer Queue."
+        />
       ) : (
         <div className="space-y-4">
           {tasks.map((task) => (
@@ -545,13 +989,13 @@ function ReviewPage() {
                 <div className="flex gap-3 pt-2">
                   <button
                     onClick={() => handleDecision(task._id, 'APPROVE', 'Verified genuine by human reviewer')}
-                    className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-medium hover:bg-emerald-700"
+                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-medium hover:bg-emerald-700 inline-flex items-center gap-1.5"
                   >
                     ✓ Approve & Route
                   </button>
                   <button
                     onClick={() => handleDecision(task._id, 'REJECT', 'Confirmed fake / stock photo by reviewer')}
-                    className="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-medium hover:bg-rose-700"
+                    className="px-4 py-2 bg-rose-600 text-white rounded-lg text-xs font-medium hover:bg-rose-700 inline-flex items-center gap-1.5"
                   >
                     ✕ Reject & Close
                   </button>
@@ -565,8 +1009,160 @@ function ReviewPage() {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Analytics Page — Real Data from API
+// ─────────────────────────────────────────────────────────────────────────────
+function AnalyticsPage() {
+  const [summary, setSummary] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAnalytics = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    fetch('/api/admin/analytics/summary', { credentials: 'include' })
+      .then(async (r) => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => null);
+          throw new Error(err?.error?.message || `Failed to fetch analytics (${r.status})`);
+        }
+        return r.json();
+      })
+      .then((data) => setSummary(data.summary))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { fetchAnalytics(); }, [fetchAnalytics]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-16 gap-3">
+        <Spinner /> <span className="text-sm text-slate-500">Loading analytics...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Operational Analytics</h1>
+          <p className="text-sm text-slate-500 mt-1">Real-time metrics from your complaint database.</p>
+        </div>
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-center gap-2">
+          <span>⚠️</span> {error}
+        </div>
+      </div>
+    );
+  }
+
+  const statusCounts = summary?.statusCounts || {};
+  const categoryCounts = summary?.categoryCounts || {};
+  const total = summary?.totalComplaints || 0;
+  const overdue = summary?.overdueComplaints || 0;
+  const resolved = (statusCounts['RESOLVED'] || 0) + (statusCounts['CLOSED'] || 0);
+  const resolutionRate = total > 0 ? ((resolved / total) * 100).toFixed(1) : '0.0';
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Operational Analytics</h1>
+          <p className="text-sm text-slate-500 mt-1">Real-time metrics from your complaint database.</p>
+        </div>
+        <button
+          onClick={fetchAnalytics}
+          className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm inline-flex items-center gap-2"
+        >
+          <span>🔄</span> Refresh
+        </button>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-5 bg-white border border-slate-200 rounded-xl">
+          <p className="text-xs font-medium text-slate-500">Total Complaints</p>
+          <p className="text-3xl font-bold text-slate-900 mt-1">{total}</p>
+          <p className="text-[11px] text-slate-400 mt-1">All time submissions</p>
+        </div>
+        <div className="p-5 bg-white border border-slate-200 rounded-xl">
+          <p className="text-xs font-medium text-slate-500">Resolution Rate</p>
+          <p className="text-3xl font-bold text-emerald-600 mt-1">{resolutionRate}%</p>
+          <p className="text-[11px] text-slate-400 mt-1">{resolved} resolved + closed</p>
+        </div>
+        <div className="p-5 bg-white border border-slate-200 rounded-xl">
+          <p className="text-xs font-medium text-slate-500">Overdue (SLA Breach)</p>
+          <p className={`text-3xl font-bold mt-1 ${overdue > 0 ? 'text-red-600' : 'text-emerald-600'}`}>{overdue}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Past SLA deadline</p>
+        </div>
+        <div className="p-5 bg-white border border-slate-200 rounded-xl">
+          <p className="text-xs font-medium text-slate-500">Active (Open)</p>
+          <p className="text-3xl font-bold text-blue-600 mt-1">{total - resolved}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Awaiting resolution</p>
+        </div>
+      </div>
+
+      {/* Status Breakdown */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
+          <h3 className="text-sm font-semibold text-slate-700 uppercase mb-4">By Status</h3>
+          {Object.keys(statusCounts).length === 0 ? (
+            <p className="text-sm text-slate-400 italic">No data yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {Object.entries(statusCounts).sort(([,a], [,b]) => (b as number) - (a as number)).map(([status, count]) => (
+                <div key={status} className="flex items-center justify-between">
+                  <StatusBadge status={status} />
+                  <div className="flex items-center gap-3 flex-1 ml-3">
+                    <div className="flex-1 bg-slate-100 rounded-full h-2">
+                      <div
+                        className="bg-blue-500 rounded-full h-2 transition-all"
+                        style={{ width: `${Math.max(4, ((count as number) / total) * 100)}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-semibold text-slate-900 w-8 text-right">{count as number}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
+          <h3 className="text-sm font-semibold text-slate-700 uppercase mb-4">By Category</h3>
+          {Object.keys(categoryCounts).length === 0 ? (
+            <p className="text-sm text-slate-400 italic">No data yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {Object.entries(categoryCounts).sort(([,a], [,b]) => (b as number) - (a as number)).map(([cat, count]) => (
+                <div key={cat} className="flex items-center justify-between">
+                  <span className="text-sm text-slate-700 font-medium truncate max-w-[160px]">{cat}</span>
+                  <div className="flex items-center gap-3 flex-1 ml-3">
+                    <div className="flex-1 bg-slate-100 rounded-full h-2">
+                      <div
+                        className="bg-purple-500 rounded-full h-2 transition-all"
+                        style={{ width: `${Math.max(4, ((count as number) / total) * 100)}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-semibold text-slate-900 w-8 text-right">{count as number}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Departments Page
+// ─────────────────────────────────────────────────────────────────────────────
 function DeptPage() {
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [departments, setDepartments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -576,7 +1172,7 @@ function DeptPage() {
 
   const isAdmin = user?.role === 'DEPT_ADMIN';
 
-  const fetchDepts = () => {
+  const fetchDepts = useCallback(() => {
     setLoading(true);
     setError(null);
     fetch('/api/admin/departments', { credentials: 'include' })
@@ -590,11 +1186,9 @@ function DeptPage() {
       .then((data) => setDepartments(data.departments || []))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchDepts();
   }, []);
+
+  useEffect(() => { fetchDepts(); }, [fetchDepts]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -607,10 +1201,11 @@ function DeptPage() {
     if (res.ok) {
       setCode('');
       setName('');
+      addToast('Department created', 'success');
       fetchDepts();
     } else {
       const err = await res.json().catch(() => null);
-      alert(err?.error?.message || 'Failed to create department');
+      addToast(err?.error?.message || 'Failed to create department', 'error');
     }
   };
 
@@ -623,65 +1218,53 @@ function DeptPage() {
         </div>
         <button
           onClick={fetchDepts}
-          className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm"
+          className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm inline-flex items-center gap-2"
         >
-          🔄 Refresh
+          <span>🔄</span> Refresh
         </button>
       </div>
 
       {!isAdmin ? (
-        <div className="p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl text-xs flex justify-between items-center">
-          <span>ℹ️ Viewing municipal departments. Note: Creating new departments requires the <strong>Dept Admin</strong> role (admin@test.com).</span>
+        <div className="p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl text-xs flex items-center gap-2">
+          <span>ℹ️</span>
+          <span>Viewing departments. Creating new departments requires the <strong>Dept Admin</strong> role.</span>
         </div>
       ) : (
         <form onSubmit={handleCreate} className="p-4 bg-white border border-slate-200 rounded-xl flex gap-3 items-end shadow-sm">
           <div className="flex-1">
             <label className="block text-xs font-medium text-slate-700 mb-1">Code</label>
-            <input
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="e.g. ROADS"
-              required
-              className="w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs"
-            />
+            <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="e.g. ROADS" required className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
-          <div className="flex-2">
+          <div className="flex-[2]">
             <label className="block text-xs font-medium text-slate-700 mb-1">Name</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Roads & Infrastructure"
-              required
-              className="w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs"
-            />
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Roads & Infrastructure" required className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
-          <div className="w-24">
+          <div className="w-28">
             <label className="block text-xs font-medium text-slate-700 mb-1">SLA (Hours)</label>
-            <input
-              type="number"
-              value={sla}
-              onChange={(e) => setSla(Number(e.target.value))}
-              required
-              className="w-full border border-slate-300 rounded px-2.5 py-1.5 text-xs"
-            />
+            <input type="number" value={sla} onChange={(e) => setSla(Number(e.target.value))} required className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700"
-          >
+          <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 whitespace-nowrap">
             Add Department
           </button>
         </form>
       )}
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
-          {error}
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-center gap-2">
+          <span>⚠️</span> {error}
         </div>
       )}
 
       {loading ? (
-        <div className="p-8 text-center text-sm text-slate-500">Loading departments...</div>
+        <div className="flex items-center justify-center p-16 gap-3">
+          <Spinner /> <span className="text-sm text-slate-500">Loading departments...</span>
+        </div>
+      ) : departments.length === 0 ? (
+        <EmptyState
+          icon="🏛️"
+          title="No departments found"
+          subtitle="Departments may not have been seeded yet. Try refreshing or contact the administrator."
+        />
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
           <table className="w-full text-left text-sm">
@@ -693,21 +1276,13 @@ function DeptPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {departments.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="px-4 py-6 text-center text-slate-400 text-xs">
-                    No departments found.
-                  </td>
+              {departments.map((d) => (
+                <tr key={d._id} className="hover:bg-slate-50">
+                  <td className="px-4 py-3 font-mono font-medium text-xs text-blue-600">{d.code}</td>
+                  <td className="px-4 py-3 font-medium text-slate-900">{d.name}</td>
+                  <td className="px-4 py-3 text-slate-600">{d.defaultSlaHours} hours</td>
                 </tr>
-              ) : (
-                departments.map((d) => (
-                  <tr key={d._id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 font-mono font-medium text-xs text-blue-600">{d.code}</td>
-                    <td className="px-4 py-3 font-medium text-slate-900">{d.name}</td>
-                    <td className="px-4 py-3 text-slate-600">{d.defaultSlaHours} hours</td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
@@ -716,12 +1291,15 @@ function DeptPage() {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Users Page
+// ─────────────────────────────────────────────────────────────────────────────
 function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchUsers = () => {
+  const fetchUsers = useCallback(() => {
     setLoading(true);
     setError(null);
     fetch('/api/admin/users', { credentials: 'include' })
@@ -735,11 +1313,19 @@ function UsersPage() {
       .then((data) => setUsers(data.users || []))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchUsers();
   }, []);
+
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+  const roleBadge = (role: string) => {
+    const styles: Record<string, string> = {
+      OFFICER: 'bg-blue-50 text-blue-700 border-blue-200',
+      DEPT_ADMIN: 'bg-purple-50 text-purple-700 border-purple-200',
+      REVIEWER: 'bg-amber-50 text-amber-700 border-amber-200',
+      CITIZEN: 'bg-green-50 text-green-700 border-green-200',
+    };
+    return styles[role] || 'bg-slate-100 text-slate-700 border-slate-200';
+  };
 
   return (
     <div className="space-y-6">
@@ -750,20 +1336,28 @@ function UsersPage() {
         </div>
         <button
           onClick={fetchUsers}
-          className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm"
+          className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 shadow-sm inline-flex items-center gap-2"
         >
-          🔄 Refresh
+          <span>🔄</span> Refresh
         </button>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
-          {error}
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-center gap-2">
+          <span>⚠️</span> {error}
         </div>
       )}
 
       {loading ? (
-        <div className="p-8 text-center text-sm text-slate-500">Loading user directory...</div>
+        <div className="flex items-center justify-center p-16 gap-3">
+          <Spinner /> <span className="text-sm text-slate-500">Loading user directory...</span>
+        </div>
+      ) : users.length === 0 ? (
+        <EmptyState
+          icon="👥"
+          title="No users found"
+          subtitle="User accounts may not have been seeded yet."
+        />
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
           <table className="w-full text-left text-sm">
@@ -772,38 +1366,22 @@ function UsersPage() {
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Reputation Score</th>
+                <th className="px-4 py-3">Reputation</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {users.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-4 py-6 text-center text-slate-400 text-xs">
-                    No users found.
+              {users.map((u) => (
+                <tr key={u._id} className="hover:bg-slate-50">
+                  <td className="px-4 py-3 font-medium text-slate-900">{u.name}</td>
+                  <td className="px-4 py-3 text-slate-600">{u.email}</td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${roleBadge(u.role)}`}>
+                      {u.role}
+                    </span>
                   </td>
+                  <td className="px-4 py-3 font-mono text-xs">{u.reputation?.score ?? 100}/100</td>
                 </tr>
-              ) : (
-                users.map((u) => (
-                  <tr key={u._id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 font-medium text-slate-900">{u.name}</td>
-                    <td className="px-4 py-3 text-slate-600">{u.email}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                        u.role === 'OFFICER'
-                          ? 'bg-blue-50 text-blue-700'
-                          : u.role === 'DEPT_ADMIN'
-                          ? 'bg-purple-50 text-purple-700'
-                          : u.role === 'REVIEWER'
-                          ? 'bg-amber-50 text-amber-700'
-                          : 'bg-slate-100 text-slate-700'
-                      }`}>
-                        {u.role}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs">{u.reputation?.score ?? 100}/100</td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
@@ -812,53 +1390,28 @@ function UsersPage() {
   );
 }
 
-function AnalyticsPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Operational Analytics</h1>
-        <p className="text-sm text-slate-500 mt-1">SLA compliance, duplicate cluster metrics, and resolution speed.</p>
-      </div>
-
-      <div className="grid grid-cols-3 gap-4">
-        <div className="p-5 bg-white border border-slate-200 rounded-xl">
-          <p className="text-xs font-medium text-slate-500">SLA Compliance</p>
-          <p className="text-2xl font-bold text-emerald-600 mt-1">94.8%</p>
-          <p className="text-[11px] text-slate-400 mt-1">Within target SLA window</p>
-        </div>
-        <div className="p-5 bg-white border border-slate-200 rounded-xl">
-          <p className="text-xs font-medium text-slate-500">Duplicate Clusters Formed</p>
-          <p className="text-2xl font-bold text-purple-600 mt-1">42</p>
-          <p className="text-[11px] text-slate-400 mt-1">118 duplicate grievances merged</p>
-        </div>
-        <div className="p-5 bg-white border border-slate-200 rounded-xl">
-          <p className="text-xs font-medium text-slate-500">Review Override Rate</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">3.2%</p>
-          <p className="text-[11px] text-slate-400 mt-1">Human overrides on AI triage</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// --- App Entry ---
+// ─────────────────────────────────────────────────────────────────────────────
+// App Entry
+// ─────────────────────────────────────────────────────────────────────────────
 export function App() {
   return (
     <BrowserRouter basename="/staff">
       <AuthProvider>
-        <Routes>
-          <Route path="login" element={<LoginPage />} />
-          <Route path="staff/login" element={<Navigate to="/login" replace />} />
-          <Route path="staff/*" element={<Navigate to="/login" replace />} />
-          <Route
-            path="/*"
-            element={
-              <RequireAuth>
-                <DashboardLayout />
-              </RequireAuth>
-            }
-          />
-        </Routes>
+        <ToastProvider>
+          <Routes>
+            <Route path="login" element={<LoginPage />} />
+            <Route path="staff/login" element={<Navigate to="/login" replace />} />
+            <Route path="staff/*" element={<Navigate to="/login" replace />} />
+            <Route
+              path="/*"
+              element={
+                <RequireAuth>
+                  <DashboardLayout />
+                </RequireAuth>
+              }
+            />
+          </Routes>
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   );

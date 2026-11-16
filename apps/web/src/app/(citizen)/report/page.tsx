@@ -236,7 +236,7 @@ export default function ReportPage() {
     <div className="max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold mb-2">Report a Civic Issue</h2>
       <p className="text-gray-600 mb-6">
-        Describe the problem, attach evidence photos, and pin your exact GPS location. We'll route it to the right department.
+        Describe the problem, attach evidence photos, and pin your exact GPS location. We&apos;ll route it to the right department.
       </p>
 
       {state.error && (
@@ -349,7 +349,7 @@ export default function ReportPage() {
             Grievance Location <span className="text-red-500">*</span>
           </label>
           <p className="text-xs text-gray-500 mb-2">
-            We use your device's GPS to pinpoint the exact issue location. This helps officers find and fix the problem.
+            We use your device&apos;s GPS to pinpoint the exact issue location. This helps officers find and fix the problem.
           </p>
 
           {location ? (

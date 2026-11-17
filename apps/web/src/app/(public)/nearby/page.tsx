@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -17,17 +17,15 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
 };
 
 const CATEGORY_ICONS: Record<string, string> = {
-  SANITATION: '🧹',
-  ROADS: '🛣️',
-  WATER: '💧',
-  ELECTRICITY: '⚡',
-  STREET_LIGHTING: '💡',
-  TRAFFIC: '🚦',
-  PARKS: '🌳',
-  PUBLIC_HEALTH: '🏥',
-  STRAY_ANIMALS: '🐕',
-  ENCROACHMENT: '🏗️',
-  OTHER: '📋',
+  SANITATION: '🧹', ROADS: '🛣️', WATER: '💧', ELECTRICITY: '⚡',
+  STREET_LIGHTING: '💡', TRAFFIC: '🚦', PARKS: '🌳', PUBLIC_HEALTH: '🏥',
+  STRAY_ANIMALS: '🐕', ENCROACHMENT: '🏗️', OTHER: '📋',
+};
+
+const CATEGORY_COLORS: Record<string, string> = {
+  SANITATION: '#16a34a', ROADS: '#d97706', WATER: '#2563eb', ELECTRICITY: '#eab308',
+  STREET_LIGHTING: '#f59e0b', TRAFFIC: '#dc2626', PARKS: '#059669',
+  PUBLIC_HEALTH: '#7c3aed', STRAY_ANIMALS: '#a16207', ENCROACHMENT: '#6b7280', OTHER: '#6b7280',
 };
 
 interface NearbyComplaint {
@@ -60,6 +58,24 @@ function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+/** Minimal Leaflet type for CDN-loaded library */
+interface LeafletStatic {
+  map(el: HTMLElement): LeafletMap;
+  tileLayer(url: string, opts: Record<string, unknown>): { addTo(map: unknown): void };
+  marker(latlng: [number, number], opts?: Record<string, unknown>): LeafletMarker;
+  divIcon(opts: Record<string, unknown>): unknown;
+  circle(latlng: [number, number], opts: Record<string, unknown>): { addTo(map: unknown): { remove(): void } };
+  latLngBounds(latlngs: [number, number][]): LeafletBounds;
+}
+interface LeafletMap { setView(latlng: [number, number], zoom: number): LeafletMap; fitBounds(b: unknown): void; remove(): void }
+interface LeafletMarker { addTo(map: unknown): LeafletMarker; bindPopup(html: string, opts?: Record<string, unknown>): LeafletMarker; on(event: string, fn: () => void): void; remove(): void }
+interface LeafletBounds { extend(latlng: [number, number]): void; pad(n: number): LeafletBounds }
+
+function leaflet(): LeafletStatic | null {
+  if (typeof window === 'undefined' || !('L' in window)) return null;
+  return (window as unknown as { L: LeafletStatic }).L;
+}
+
 export default function NearbyPage() {
   const [location, setLocation] = useState<LocationInfo | null>(null);
   const [geoError, setGeoError] = useState<string | null>(null);
@@ -68,6 +84,31 @@ export default function NearbyPage() {
   const [loading, setLoading] = useState(false);
   const [radius, setRadius] = useState(2000);
   const [error, setError] = useState<string | null>(null);
+  const [leafletReady, setLeafletReady] = useState(false);
+  const [activePin, setActivePin] = useState<string | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<unknown>(null);
+  const markersRef = useRef<Array<{ remove: () => void }>>([]);
+
+  // Load Leaflet CSS & JS via CDN
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (leaflet()) { setLeafletReady(true); return; }
+
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    css.crossOrigin = '';
+    document.head.appendChild(css);
+
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.crossOrigin = '';
+    script.onload = () => setLeafletReady(true);
+    document.head.appendChild(script);
+
+    return () => { css.remove(); script.remove(); };
+  }, []);
 
   const reverseGeocode = useCallback(async (lat: number, lng: number) => {
     try {
@@ -79,12 +120,10 @@ export default function NearbyPage() {
       const data = await res.json();
       const addr = data.address || {};
       return {
-        address: [addr.road, addr.neighbourhood || addr.suburb].filter(Boolean).join(', '),
-        city: addr.city || addr.town || addr.county || '',
+        address: [addr.road, addr.neighbourhood || addr.suburb, addr.city || addr.town].filter(Boolean).join(', '),
+        city: addr.city || addr.town || addr.county || addr.state || '',
       };
-    } catch {
-      return {};
-    }
+    } catch { return {}; }
   }, []);
 
   const fetchNearby = useCallback(async (lat: number, lng: number, rad: number) => {
@@ -97,7 +136,7 @@ export default function NearbyPage() {
         throw new Error(body?.error?.message || `Failed to fetch (${res.status})`);
       }
       const data = await res.json();
-      const items = (data.complaints || []).map((c: any) => ({
+      const items = (data.complaints || []).map((c: NearbyComplaint) => ({
         ...c,
         distance: c.location?.coordinates
           ? Math.round(haversineDistance(lat, lng, c.location.coordinates[1], c.location.coordinates[0]))
@@ -105,8 +144,8 @@ export default function NearbyPage() {
       }));
       items.sort((a: NearbyComplaint, b: NearbyComplaint) => (a.distance || 0) - (b.distance || 0));
       setComplaints(items);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
       setComplaints([]);
     }
     setLoading(false);
@@ -115,21 +154,18 @@ export default function NearbyPage() {
   const requestLocation = useCallback(() => {
     setGeoError(null);
     setGeoLoading(true);
-
     if (!navigator.geolocation) {
       setGeoError('Geolocation not supported by your browser.');
       setGeoLoading(false);
       return;
     }
-
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         const accuracy = Math.round(pos.coords.accuracy);
         const geo = await reverseGeocode(lat, lng);
-        const loc = { lat, lng, accuracy, ...geo };
-        setLocation(loc);
+        setLocation({ lat, lng, accuracy, ...geo });
         setGeoLoading(false);
         fetchNearby(lat, lng, radius);
       },
@@ -137,23 +173,118 @@ export default function NearbyPage() {
         setGeoLoading(false);
         switch (err.code) {
           case err.PERMISSION_DENIED:
-            setGeoError('Location permission denied. Please allow location access in browser settings.');
+            setGeoError('Location permission denied. Please allow location access in your browser settings.');
             break;
           case err.POSITION_UNAVAILABLE:
-            setGeoError('Location unavailable. Check your GPS or network.');
+            setGeoError('Location unavailable. Please check your GPS or network connection.');
             break;
           default:
-            setGeoError('Could not determine location. Please try again.');
+            setGeoError('Could not determine your location. Please try again.');
         }
       },
       { enableHighAccuracy: true, timeout: 15000 },
     );
   }, [reverseGeocode, fetchNearby, radius]);
 
-  // Auto-request location on mount
+  useEffect(() => { requestLocation(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Initialize / update Leaflet map
   useEffect(() => {
-    requestLocation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const L = leaflet();
+    if (!L || !mapRef.current || !location) return;
+
+    // Create map if not exists
+    if (!mapInstanceRef.current) {
+      mapInstanceRef.current = L.map(mapRef.current).setView([location.lat, location.lng], 14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19,
+      }).addTo(mapInstanceRef.current);
+    } else {
+      (mapInstanceRef.current as LeafletMap).setView([location.lat, location.lng], 14);
+    }
+
+    const map = mapInstanceRef.current;
+
+    // Clear old markers
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
+
+    // User location marker
+    const userIcon = L.divIcon({
+      className: '',
+      html: `<div style="position:relative;width:24px;height:24px;">
+        <div style="position:absolute;inset:0;background:#3b82f6;border-radius:50%;opacity:0.3;animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
+        <div style="position:absolute;inset:4px;background:#2563eb;border:3px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>
+      </div><style>@keyframes ping{75%,100%{transform:scale(2);opacity:0}}</style>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+    });
+
+    const userMarker = L.marker([location.lat, location.lng], { icon: userIcon })
+      .addTo(map)
+      .bindPopup(`<strong>📍 Your Location</strong><br/>${location.address || `${location.lat.toFixed(5)}, ${location.lng.toFixed(5)}`}<br/><small>Accuracy: ±${location.accuracy || '?'}m</small>`);
+    markersRef.current.push(userMarker as { remove: () => void });
+
+    // Radius circle
+    const circle = L.circle([location.lat, location.lng], {
+      radius: radius, color: '#3b82f6', fillColor: '#3b82f6',
+      fillOpacity: 0.05, weight: 1, dashArray: '5, 5',
+    }).addTo(map);
+    markersRef.current.push(circle);
+
+    // Complaint markers
+    complaints.forEach((c) => {
+      if (!c.location?.coordinates) return;
+      const [cLng, cLat] = c.location.coordinates;
+      const cat = c.category || c.citizenCategory || 'OTHER';
+      const catColor = CATEGORY_COLORS[cat] || '#6b7280';
+      const catIcon = CATEGORY_ICONS[cat] || '📋';
+      const statusInfo = STATUS_LABELS[c.status] || { label: c.status };
+      const dist = c.distance !== undefined
+        ? (c.distance >= 1000 ? `${(c.distance / 1000).toFixed(1)} km` : `${c.distance}m`) : '';
+
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="background:${catColor};width:30px;height:30px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;">${catIcon}</div>`,
+        iconSize: [30, 30], iconAnchor: [15, 15],
+      });
+
+      const marker = L.marker([cLat, cLng], { icon })
+        .addTo(map)
+        .bindPopup(
+          `<div style="min-width:200px">
+            <strong style="font-size:13px">${c.title}</strong><br/>
+            <span style="display:inline-block;margin:4px 0;padding:1px 6px;border-radius:9999px;font-size:11px;background:#f3f4f6;">${statusInfo.label}</span>
+            <span style="display:inline-block;margin:4px 0 4px 4px;font-size:11px;color:#6b7280">${catIcon} ${cat}</span><br/>
+            ${dist ? `<span style="font-size:11px;color:#2563eb;font-weight:600">📍 ${dist} away</span><br/>` : ''}
+            <a href="/track/${c.publicId}" style="display:inline-block;margin-top:6px;padding:4px 12px;background:#2563eb;color:white;border-radius:8px;font-size:12px;text-decoration:none;font-weight:500">Track →</a>
+          </div>`, { closeButton: true });
+
+      marker.on('click', () => setActivePin(c.publicId));
+      markersRef.current.push(marker as { remove: () => void });
+    });
+
+    // Fit bounds
+    if (complaints.length > 0) {
+      const bounds = L.latLngBounds([[location.lat, location.lng]]);
+      complaints.forEach((c) => {
+        if (c.location?.coordinates) {
+          bounds.extend([c.location.coordinates[1], c.location.coordinates[0]]);
+        }
+      });
+      (map as LeafletMap).fitBounds(bounds.pad(0.1));
+    }
+  }, [leafletReady, location, complaints, radius]);
+
+  // Cleanup map on unmount
+  useEffect(() => {
+    return () => {
+      if (mapInstanceRef.current) {
+        (mapInstanceRef.current as LeafletMap).remove();
+        mapInstanceRef.current = null;
+      }
+    };
   }, []);
 
   const handleRadiusChange = (newRadius: number) => {
@@ -162,12 +293,10 @@ export default function NearbyPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto py-6">
+    <div className="space-y-6 max-w-7xl mx-auto py-4">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Nearby Civic Issues</h1>
-        <p className="text-gray-600 mt-1">
-          Live grievances reported near your current location.
-        </p>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Nearby Civic Issues</h1>
+        <p className="text-gray-600 mt-1">Live grievances reported near your current GPS location, displayed on an interactive map.</p>
       </div>
 
       {/* Location Status Bar */}
@@ -185,20 +314,16 @@ export default function NearbyPage() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <select
-                value={radius}
-                onChange={(e) => handleRadiusChange(Number(e.target.value))}
-                className="text-xs border border-green-300 rounded-lg px-2 py-1.5 bg-white focus:ring-2 focus:ring-green-400 focus:outline-none"
-              >
+              <select value={radius} onChange={(e) => handleRadiusChange(Number(e.target.value))}
+                className="text-xs border border-green-300 rounded-lg px-2 py-1.5 bg-white focus:ring-2 focus:ring-green-400 focus:outline-none">
                 <option value={500}>500m radius</option>
                 <option value={1000}>1 km radius</option>
                 <option value={2000}>2 km radius</option>
                 <option value={5000}>5 km radius</option>
+                <option value={10000}>10 km radius</option>
               </select>
-              <button
-                onClick={requestLocation}
-                className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-medium hover:bg-green-700"
-              >
+              <button onClick={requestLocation}
+                className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-medium hover:bg-green-700 transition-colors">
                 🔄 Re-detect
               </button>
             </div>
@@ -212,11 +337,9 @@ export default function NearbyPage() {
               </div>
             ) : (
               <>
-                <p className="text-sm text-slate-600">Allow location access to see civic issues near you.</p>
-                <button
-                  onClick={requestLocation}
-                  className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
-                >
+                <p className="text-sm text-slate-600">Allow location access to see civic issues near you on an interactive map.</p>
+                <button onClick={requestLocation}
+                  className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
                   📡 Enable GPS Location
                 </button>
               </>
@@ -228,11 +351,8 @@ export default function NearbyPage() {
         )}
       </div>
 
-      {/* Error */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
-          ⚠️ {error}
-        </div>
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">⚠️ {error}</div>
       )}
 
       {/* Results */}
@@ -242,12 +362,17 @@ export default function NearbyPage() {
           <span className="text-sm text-slate-500">Searching nearby issues...</span>
         </div>
       ) : location && complaints.length === 0 ? (
-        <div className="p-16 text-center bg-white border border-slate-200 rounded-xl">
-          <div className="text-4xl mb-4">🏙️</div>
-          <p className="text-base font-medium text-slate-700">No issues found nearby</p>
-          <p className="text-sm text-slate-500 mt-1">
-            No civic complaints within {radius >= 1000 ? `${radius / 1000} km` : `${radius}m`} of your location. Try increasing the search radius.
-          </p>
+        <div className="grid lg:grid-cols-2 gap-4">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            <div ref={mapRef} className="w-full min-h-[400px] lg:min-h-[500px]" />
+          </div>
+          <div className="p-16 text-center bg-white border border-slate-200 rounded-xl flex flex-col items-center justify-center">
+            <div className="text-4xl mb-4">🏙️</div>
+            <p className="text-base font-medium text-slate-700">No issues found nearby</p>
+            <p className="text-sm text-slate-500 mt-1">
+              No civic complaints within {radius >= 1000 ? `${radius / 1000} km` : `${radius}m`} of your location. Try increasing the search radius.
+            </p>
+          </div>
         </div>
       ) : complaints.length > 0 ? (
         <div>
@@ -255,64 +380,32 @@ export default function NearbyPage() {
             <h3 className="font-semibold text-gray-800">
               {complaints.length} issue{complaints.length !== 1 ? 's' : ''} found nearby
             </h3>
-            <span className="text-xs text-gray-500">Sorted by distance</span>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Map placeholder */}
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm p-5 min-h-[400px]">
-              <div className="flex items-center justify-between pb-3 border-b mb-4">
-                <h3 className="font-semibold text-gray-800 text-sm">📍 Issue Locations</h3>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded font-medium">
-                  {complaints.length} pins
-                </span>
-              </div>
-
-              {/* Your location */}
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-3 text-xs">
-                <span className="font-medium text-blue-800">📍 Your Location:</span>{' '}
-                <span className="text-blue-700">{location?.address || `${location?.lat.toFixed(5)}, ${location?.lng.toFixed(5)}`}</span>
-              </div>
-
-              {/* Complaint pins */}
-              <div className="space-y-2 max-h-80 overflow-y-auto">
-                {complaints.map((c) => {
-                  const cat = c.category || c.citizenCategory || 'OTHER';
-                  const icon = CATEGORY_ICONS[cat] || '📋';
-                  return (
-                    <div key={c.publicId} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border border-slate-100 text-xs">
-                      <span className="text-base">{icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-800 truncate">{c.title}</p>
-                        <p className="text-slate-500">
-                          {c.location?.coordinates && (
-                            <span>{c.location.coordinates[1].toFixed(4)}, {c.location.coordinates[0].toFixed(4)}</span>
-                          )}
-                        </p>
-                      </div>
-                      {c.distance !== undefined && (
-                        <span className="font-semibold text-blue-700 whitespace-nowrap">
-                          {c.distance >= 1000 ? `${(c.distance / 1000).toFixed(1)} km` : `${c.distance}m`}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500">Sorted by distance</span>
+              <div className="hidden sm:flex items-center gap-1.5 text-[10px] text-gray-500 ml-3">
+                {['ROADS', 'WATER', 'SANITATION', 'ELECTRICITY'].map((cat) => (
+                  <span key={cat} className="flex items-center gap-0.5">
+                    <span className="w-2 h-2 rounded-full" style={{ background: CATEGORY_COLORS[cat] }} />
+                    {cat.charAt(0) + cat.slice(1).toLowerCase()}
+                  </span>
+                ))}
               </div>
             </div>
+          </div>
 
-            {/* List */}
-            <div className="space-y-3">
+          <div className="grid lg:grid-cols-2 gap-4">
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm order-1">
+              <div ref={mapRef} className="w-full min-h-[400px] lg:min-h-[500px]" />
+            </div>
+            <div className="space-y-3 order-2 max-h-[500px] overflow-y-auto pr-1">
               {complaints.map((c) => {
                 const statusInfo = STATUS_LABELS[c.status] || { label: c.status, color: 'bg-gray-100 text-gray-800' };
                 const cat = c.category || c.citizenCategory || 'OTHER';
                 const icon = CATEGORY_ICONS[cat] || '📋';
+                const isActive = activePin === c.publicId;
                 return (
-                  <Link
-                    key={c.publicId}
-                    href={`/track/${c.publicId}`}
-                    className="block p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition-all"
-                  >
+                  <Link key={c.publicId} href={`/track/${c.publicId}`}
+                    className={`block p-4 bg-white border rounded-xl hover:border-blue-300 hover:shadow-sm transition-all ${isActive ? 'border-blue-400 shadow-md ring-1 ring-blue-200' : 'border-gray-200'}`}>
                     <div className="flex justify-between items-start gap-2 mb-2">
                       <h4 className="font-medium text-gray-900 text-sm leading-snug">{c.title}</h4>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${statusInfo.color}`}>

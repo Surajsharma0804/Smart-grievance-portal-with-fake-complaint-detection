@@ -8,6 +8,9 @@ export { OutboxEvent, type IOutboxEvent } from './models/outbox-event';
 export { Upvote, type IUpvote } from './models/upvote';
 export { AuditLog, type IAuditLog } from './models/audit-log';
 export { ReviewTask, type IReviewTask, Notification, type INotification, Appeal, type IAppeal } from './models/review';
+export { Contractor, type IContractor } from './models/contractor';
+export { Project, type IProject, ProjectStatus } from './models/project';
+export { Bid, type IBid, BidStatus } from './models/bid';
 
 // Services — Auth
 export * as authService from './services/auth';

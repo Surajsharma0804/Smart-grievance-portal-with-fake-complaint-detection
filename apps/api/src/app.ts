@@ -13,6 +13,7 @@ import { mediaRouter } from './routes/media';
 import { adminRouter } from './routes/admin';
 import { officerRouter } from './routes/officer';
 import { reviewRouter } from './routes/review';
+import { contractorRouter } from './routes/contractor';
 
 const logger = pino({ level: 'info' });
 
@@ -45,6 +46,7 @@ export function createApp(options: { clientOrigin: string; logLevel?: string }) 
   app.use('/', adminRouter);
   app.use('/', officerRouter);
   app.use('/', reviewRouter);
+  app.use('/', contractorRouter);
 
   // 404 for unmatched routes
   app.use((_req: Request, _res: Response, next: NextFunction) => {

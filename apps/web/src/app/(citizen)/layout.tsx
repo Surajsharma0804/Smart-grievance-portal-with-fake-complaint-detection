@@ -1,36 +1,54 @@
 import Link from 'next/link';
 import { getSession, logoutAction } from '@/lib/auth-actions';
+import { SiteFooter } from '../(public)/SiteShell';
 
 export default async function CitizenLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
 
   return (
-    <div className="mx-auto max-w-7xl px-4" suppressHydrationWarning>
-      <header className="flex items-center justify-between py-4 border-b">
-        <Link href="/" className="text-xl font-semibold">Nagrik Setu</Link>
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/my" className="hover:underline">My complaints</Link>
-          <Link href="/report" className="hover:underline font-medium text-blue-600">Report</Link>
-          <Link href="/nearby" className="hover:underline">Nearby</Link>
-          <Link href="/saved-areas" className="hover:underline">Saved areas</Link>
-          {session && ['OFFICER', 'DEPT_ADMIN', 'REVIEWER'].includes(session.user.role) && (
-            <Link
-              href="/staff"
-              className="text-xs text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded font-medium border border-blue-200"
-            >
-              Staff Console
+    <div className="min-h-screen flex flex-col bg-gray-50/50" suppressHydrationWarning>
+      {/* Authenticated header */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200/60">
+        <div className="mx-auto max-w-7xl px-4 flex items-center justify-between h-14">
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-sm">
+              <span className="text-white text-sm">🏛️</span>
+            </div>
+            <span className="font-bold text-gray-900 tracking-tight">Nagrik Setu</span>
+          </Link>
+          <nav className="flex items-center gap-1 text-sm">
+            <Link href="/my" className="px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium transition-colors">
+              My Complaints
             </Link>
-          )}
-          {session && (
-            <form action={logoutAction}>
-              <button type="submit" className="text-gray-500 hover:text-gray-700">
-                Sign out
-              </button>
-            </form>
-          )}
-        </nav>
+            <Link href="/report" className="px-3 py-1.5 rounded-lg text-blue-700 bg-blue-50 font-medium transition-colors hover:bg-blue-100">
+              Report
+            </Link>
+            <Link href="/nearby" className="px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium transition-colors hidden sm:block">
+              Nearby
+            </Link>
+            <Link href="/saved-areas" className="px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium transition-colors hidden sm:block">
+              Saved Areas
+            </Link>
+            {session && ['OFFICER', 'DEPT_ADMIN', 'REVIEWER'].includes(session.user.role) && (
+              <Link
+                href="/staff"
+                className="text-xs text-gray-600 bg-gray-100 hover:bg-gray-200 px-2.5 py-1.5 rounded-lg font-medium border border-gray-200 transition-colors hidden sm:flex items-center gap-1"
+              >
+                <span className="text-[10px]">🔒</span> Staff
+              </Link>
+            )}
+            {session && (
+              <form action={logoutAction} className="ml-1">
+                <button type="submit" className="text-xs text-gray-500 hover:text-red-600 px-2 py-1.5 rounded-lg hover:bg-red-50 transition-colors">
+                  Sign out
+                </button>
+              </form>
+            )}
+          </nav>
+        </div>
       </header>
-      <main className="py-6">{children}</main>
+      <main className="flex-1 mx-auto max-w-7xl w-full px-4 py-6">{children}</main>
+      <SiteFooter />
     </div>
   );
 }

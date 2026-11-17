@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
+import Link from 'next/link';
 import { registerAction, type AuthState } from '@/lib/auth-actions';
 
 const initial: AuthState = {};
@@ -9,18 +10,25 @@ export default function RegisterPage() {
   const [state, action, pending] = useActionState(registerAction, initial);
 
   return (
-    <div className="mx-auto max-w-md mt-16 px-4">
-      <h1 className="text-2xl font-bold mb-6">Create your account</h1>
+    <div className="mx-auto max-w-md mt-8 sm:mt-16 px-4">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/20">
+          <span className="text-white text-2xl">👤</span>
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Create your account</h1>
+        <p className="text-sm text-gray-500 mt-1.5">Join Nagrik Setu to report civic issues and track resolutions</p>
+      </div>
 
       {state.error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded text-sm">
-          {state.error}
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-center gap-2">
+          <span>⚠️</span> {state.error}
         </div>
       )}
 
-      <form action={action} className="space-y-4">
+      <form action={action} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
             Full name
           </label>
           <input
@@ -28,32 +36,35 @@ export default function RegisterPage() {
             name="name"
             type="text"
             required
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            minLength={2}
+            className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+            placeholder="Enter your full name"
           />
           {state.fieldErrors?.name && (
-            <p className="text-sm text-red-600 mt-1">{state.fieldErrors.name}</p>
+            <p className="text-xs text-red-600 mt-1">{state.fieldErrors.name}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium mb-1">
-            Email
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Email address
           </label>
           <input
             id="email"
             name="email"
             type="email"
             required
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+            placeholder="you@example.com"
           />
           {state.fieldErrors?.email && (
-            <p className="text-sm text-red-600 mt-1">{state.fieldErrors.email}</p>
+            <p className="text-xs text-red-600 mt-1">{state.fieldErrors.email}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium mb-1">
-            Password (min 8 characters)
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Password <span className="text-gray-400 font-normal">(min 8 characters)</span>
           </label>
           <input
             id="password"
@@ -61,27 +72,27 @@ export default function RegisterPage() {
             type="password"
             required
             minLength={8}
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
           />
           {state.fieldErrors?.password && (
-            <p className="text-sm text-red-600 mt-1">{state.fieldErrors.password}</p>
+            <p className="text-xs text-red-600 mt-1">{state.fieldErrors.password}</p>
           )}
         </div>
 
         <button
           type="submit"
           disabled={pending}
-          className="w-full py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+          className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 text-sm shadow-lg shadow-blue-500/20 transition-all"
         >
           {pending ? 'Creating account...' : 'Create account'}
         </button>
       </form>
 
-      <p className="mt-4 text-sm text-center text-gray-600">
+      <p className="mt-6 text-sm text-center text-gray-500">
         Already have an account?{' '}
-        <a href="/login" className="text-blue-600 hover:underline">
+        <Link href="/login" className="text-blue-600 hover:underline font-medium">
           Sign in
-        </a>
+        </Link>
       </p>
     </div>
   );

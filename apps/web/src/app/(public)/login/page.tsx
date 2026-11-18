@@ -27,7 +27,7 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md mt-8 sm:mt-16 px-4" suppressHydrationWarning>
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+        <div className="w-14 h-14 bg-teal-700 rounded-xl flex items-center justify-center mx-auto mb-4">
           <span className="text-white text-2xl">🏛️</span>
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">Sign in to Nagrik Setu</h1>
@@ -49,7 +49,7 @@ export default function LoginPage() {
               key={acc.email}
               type="button"
               onClick={() => autofill(acc.email)}
-              className="flex items-center gap-2 p-2 text-left bg-white border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors text-xs"
+              className="flex items-center gap-2 p-2 text-left bg-white border border-gray-200 rounded-lg hover:border-teal-400 hover:bg-teal-50 transition-colors text-xs"
             >
               <span className="text-base">{acc.icon}</span>
               <div>
@@ -74,7 +74,7 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             placeholder="you@example.com"
           />
           {state.fieldErrors?.email && (
@@ -93,7 +93,7 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
           />
           {state.fieldErrors?.password && (
             <p className="text-xs text-red-600 mt-1">{state.fieldErrors.password}</p>
@@ -103,7 +103,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 text-sm transition-colors"
+          className="w-full py-2.5 bg-teal-700 text-white rounded-lg font-semibold hover:bg-teal-800 disabled:opacity-50 text-sm transition-colors"
         >
           {pending ? 'Signing in...' : 'Sign in'}
         </button>
@@ -111,7 +111,7 @@ export default function LoginPage() {
 
       <p className="mt-6 text-sm text-center text-gray-500">
         New citizen?{' '}
-        <Link href="/register" className="text-blue-600 hover:underline font-medium">
+        <Link href="/register" className="text-teal-700 hover:underline font-medium">
           Create an account
         </Link>
       </p>

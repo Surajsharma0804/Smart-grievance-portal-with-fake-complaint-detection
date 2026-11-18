@@ -269,7 +269,7 @@ export default function ReportPage() {
             minLength={5}
             maxLength={200}
             placeholder="e.g., Broken streetlight near sector 17 market"
-            className="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
           />
           {state.fieldErrors?.title && (
             <p className="text-sm text-red-600 mt-1">{state.fieldErrors.title}</p>
@@ -287,7 +287,7 @@ export default function ReportPage() {
             rows={4}
             maxLength={2000}
             placeholder="Provide additional details about the problem — how long it's been there, impact on residents, etc."
-            className="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
           />
         </div>
 
@@ -299,7 +299,7 @@ export default function ReportPage() {
           <select
             id="citizenCategory"
             name="citizenCategory"
-            className="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
           >
             <option value="">Select a category</option>
             {CATEGORIES.map((c) => (
@@ -335,7 +335,7 @@ export default function ReportPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={item.previewUrl} alt={item.name} className="w-full h-24 object-cover rounded" />
                   <div className="mt-1 flex items-center justify-between text-xs px-1">
-                    {item.status === 'uploading' && <span className="text-blue-600 font-medium">Uploading...</span>}
+                    {item.status === 'uploading' && <span className="text-teal-700 font-medium">Uploading...</span>}
                     {item.status === 'done' && <span className="text-green-600 font-medium">✓ Ready</span>}
                     {item.status === 'error' && <span className="text-red-600 font-medium" title={item.error}>✕ Failed</span>}
                     <button type="button" onClick={() => handleRemoveUpload(item.id)} className="text-gray-400 hover:text-red-600 font-bold">×</button>
@@ -426,11 +426,11 @@ export default function ReportPage() {
                 type="button"
                 onClick={requestLocation}
                 disabled={geoLoading}
-                className="w-full px-4 py-3 border-2 border-dashed border-blue-300 rounded-xl text-sm hover:bg-blue-50 font-medium text-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full px-4 py-3 border-2 border-dashed border-teal-300 rounded-xl text-sm hover:bg-blue-50 font-medium text-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {geoLoading ? (
                   <>
-                    <span className="w-4 h-4 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-teal-200 border-t-teal-600 rounded-full animate-spin" />
                     Detecting your location...
                   </>
                 ) : (
@@ -443,7 +443,7 @@ export default function ReportPage() {
                 <button
                   type="button"
                   onClick={() => setShowManual(true)}
-                  className="text-xs text-gray-500 hover:text-blue-600 underline"
+                  className="text-xs text-gray-500 hover:text-teal-700 underline"
                 >
                   Or enter coordinates manually
                 </button>
@@ -462,7 +462,7 @@ export default function ReportPage() {
                         value={manualLat}
                         onChange={(e) => setManualLat(e.target.value)}
                         placeholder="e.g. 30.7333"
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
                       />
                     </div>
                     <div>
@@ -473,7 +473,7 @@ export default function ReportPage() {
                         value={manualLng}
                         onChange={(e) => setManualLng(e.target.value)}
                         placeholder="e.g. 76.7794"
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -511,7 +511,7 @@ export default function ReportPage() {
         <button
           type="submit"
           disabled={pending || isUploading || !location}
-          className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 disabled:opacity-50 text-sm shadow-sm transition-colors"
+          className="w-full py-3 bg-teal-700 text-white rounded-xl font-semibold hover:bg-teal-800 disabled:opacity-50 text-sm shadow-sm transition-colors"
         >
           {pending ? '📤 Submitting...' : isUploading ? '⏳ Uploading photos...' : '📨 Submit Complaint'}
         </button>

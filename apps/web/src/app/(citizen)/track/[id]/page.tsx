@@ -102,7 +102,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  SUBMITTED: 'bg-blue-500',
+  SUBMITTED: 'bg-teal-500',
   ANALYZING: 'bg-yellow-500',
   NEEDS_REVIEW: 'bg-orange-500',
   ROUTED: 'bg-purple-500',
@@ -170,7 +170,7 @@ function SLACountdown({ slaDueAt, status }: { slaDueAt: string; status: string }
         ? 'bg-red-50 border border-red-200 text-red-700'
         : hours < 6
         ? 'bg-amber-50 border border-amber-200 text-amber-700'
-        : 'bg-blue-50 border border-blue-200 text-blue-700'
+        : 'bg-teal-50 border border-teal-200 text-teal-700'
     }`}>
       {isOverdue ? (
         <>
@@ -271,7 +271,7 @@ export default async function TrackPage({ params }: TrackPageProps) {
                   </div>
                   <span className={`text-[10px] mt-1.5 font-medium text-center ${
                     stepStatus === 'done' ? 'text-green-700' :
-                    stepStatus === 'current' ? 'text-blue-700' : 'text-gray-400'
+                    stepStatus === 'current' ? 'text-teal-700' : 'text-gray-400'
                   }`}>
                     {step.label}
                   </span>

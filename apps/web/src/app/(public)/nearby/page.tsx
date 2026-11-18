@@ -332,14 +332,14 @@ export default function NearbyPage() {
           <div className="text-center space-y-3">
             {geoLoading ? (
               <div className="flex items-center justify-center gap-2 text-sm text-slate-600">
-                <span className="w-5 h-5 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin" />
+                <span className="w-5 h-5 border-2 border-slate-300 border-t-teal-600 rounded-full animate-spin" />
                 Detecting your GPS location...
               </div>
             ) : (
               <>
                 <p className="text-sm text-slate-600">Allow location access to see civic issues near you on an interactive map.</p>
                 <button onClick={requestLocation}
-                  className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                  className="px-5 py-2.5 bg-teal-700 text-white rounded-lg text-sm font-medium hover:bg-teal-800 transition-colors">
                   📡 Enable GPS Location
                 </button>
               </>
@@ -358,7 +358,7 @@ export default function NearbyPage() {
       {/* Results */}
       {loading ? (
         <div className="flex items-center justify-center p-16 gap-3">
-          <span className="w-6 h-6 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+          <span className="w-6 h-6 border-2 border-slate-200 border-t-teal-600 rounded-full animate-spin" />
           <span className="text-sm text-slate-500">Searching nearby issues...</span>
         </div>
       ) : location && complaints.length === 0 ? (
@@ -405,7 +405,7 @@ export default function NearbyPage() {
                 const isActive = activePin === c.publicId;
                 return (
                   <Link key={c.publicId} href={`/track/${c.publicId}`}
-                    className={`block p-4 bg-white border rounded-xl hover:border-blue-300 hover:shadow-sm transition-all ${isActive ? 'border-blue-400 shadow-md ring-1 ring-blue-200' : 'border-gray-200'}`}>
+                    className={`block p-4 bg-white border rounded-xl hover:border-teal-300 hover:shadow-sm transition-all ${isActive ? 'border-blue-400 shadow-md ring-1 ring-blue-200' : 'border-gray-200'}`}>
                     <div className="flex justify-between items-start gap-2 mb-2">
                       <h4 className="font-medium text-gray-900 text-sm leading-snug">{c.title}</h4>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${statusInfo.color}`}>
@@ -416,12 +416,12 @@ export default function NearbyPage() {
                       <span className="font-medium text-gray-700">{icon} {cat}</span>
                       <span className="flex items-center gap-3">
                         {c.distance !== undefined && (
-                          <span className="font-semibold text-blue-600">
+                          <span className="font-semibold text-teal-700">
                             📍 {c.distance >= 1000 ? `${(c.distance / 1000).toFixed(1)} km` : `${c.distance}m`}
                           </span>
                         )}
                         <span>👍 {c.upvotes || 0}</span>
-                        <span className="text-blue-600 font-medium">Track →</span>
+                        <span className="text-teal-700 font-medium">Track →</span>
                       </span>
                     </div>
                   </Link>

@@ -11,7 +11,7 @@ export default async function CitizenLayout({ children }: { children: React.Reac
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200/60">
         <div className="mx-auto max-w-7xl px-4 flex items-center justify-between h-14">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+            <div className="w-8 h-8 bg-teal-700 rounded-lg flex items-center justify-center shadow-sm">
               <span className="text-white text-sm">🏛️</span>
             </div>
             <span className="font-bold text-gray-900 tracking-tight">Nagrik Setu</span>
@@ -20,7 +20,7 @@ export default async function CitizenLayout({ children }: { children: React.Reac
             <Link href="/my" className="px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium transition-colors">
               My Complaints
             </Link>
-            <Link href="/report" className="px-3 py-1.5 rounded-lg text-blue-700 bg-blue-50 font-medium transition-colors hover:bg-blue-100">
+            <Link href="/report" className="px-3 py-1.5 rounded-lg text-teal-700 bg-teal-50 font-medium transition-colors hover:bg-blue-100">
               Report
             </Link>
             <Link href="/nearby" className="px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium transition-colors hidden sm:block">

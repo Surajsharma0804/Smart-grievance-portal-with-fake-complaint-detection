@@ -65,7 +65,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   OPEN: 'bg-green-100 text-green-800',
-  BIDDING: 'bg-blue-100 text-blue-800',
+  BIDDING: 'bg-teal-100 text-teal-800',
   AWARDED: 'bg-purple-100 text-purple-800',
   IN_PROGRESS: 'bg-teal-100 text-teal-800',
   COMPLETED: 'bg-gray-100 text-gray-800',
@@ -173,7 +173,7 @@ export default async function ContractorsPage() {
                     {project.complaintId && (
                       <Link
                         href={`/track/${project.complaintId.publicId}`}
-                        className="text-blue-600 font-medium hover:underline"
+                        className="text-teal-700 font-medium hover:underline"
                       >
                         View Issue →
                       </Link>

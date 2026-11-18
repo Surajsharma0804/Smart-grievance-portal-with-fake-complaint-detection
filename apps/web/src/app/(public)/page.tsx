@@ -66,7 +66,7 @@ export default function HomePage() {
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 leading-[1.1]">
           Report civic issues.
           <br className="hidden sm:inline" />
-          <span className="text-blue-600">
+          <span className="text-teal-700">
             Get them resolved faster.
           </span>
         </h1>
@@ -79,7 +79,7 @@ export default function HomePage() {
         <div className="mt-8 flex justify-center gap-4 flex-wrap">
           <Link
             href="/report"
-            className="px-7 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            className="px-7 py-3 bg-teal-700 text-white rounded-lg font-semibold hover:bg-teal-800 transition-colors"
           >
             Report an Issue →
           </Link>
@@ -161,7 +161,7 @@ export default function HomePage() {
               </div>
               <p className="text-sm text-gray-700 leading-relaxed mb-4">&ldquo;{t.text}&rdquo;</p>
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs">
+                <div className="w-9 h-9 rounded-full bg-teal-700 flex items-center justify-center text-white font-bold text-xs">
                   {t.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
@@ -207,7 +207,7 @@ export default function HomePage() {
       {/* Staff Console */}
       <section className="bg-slate-900 text-white rounded-2xl p-8 md:p-10">
         <div className="max-w-3xl">
-          <span className="text-blue-400 text-xs uppercase font-bold tracking-wider">Staff Portal</span>
+          <span className="text-teal-400 text-xs uppercase font-bold tracking-wider">Staff Portal</span>
           <h3 className="text-2xl font-bold mt-2">Municipal Staff &amp; Officer Console</h3>
           <p className="text-slate-400 mt-3 text-sm leading-relaxed max-w-2xl">
             Authorized officers, department heads, and reviewers manage complaint queues,
@@ -217,7 +217,7 @@ export default function HomePage() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/staff"
-              className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-500 transition-colors"
+              className="px-5 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-semibold hover:bg-teal-500 transition-colors"
             >
               Open Staff Console →
             </Link>
@@ -249,7 +249,7 @@ export default function HomePage() {
         <div className="mt-6 flex justify-center gap-4">
           <Link
             href="/register"
-            className="px-7 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            className="px-7 py-3 bg-teal-700 text-white rounded-lg font-semibold hover:bg-teal-800 transition-colors"
           >
             Create Free Account
           </Link>

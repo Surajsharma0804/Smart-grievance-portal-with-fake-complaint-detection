@@ -78,7 +78,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
               <h2 className="text-lg font-bold text-gray-900">
                 Your Watch Areas
               </h2>
-              <span className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-semibold border border-blue-200">
+              <span className="text-xs bg-blue-50 text-teal-700 px-2.5 py-1 rounded-full font-semibold border border-blue-200">
                 {initialAreas.length}/5
               </span>
             </div>
@@ -107,7 +107,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                           {area.categories.map((c) => (
                             <span
                               key={c}
-                              className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-medium border border-blue-200"
+                              className="px-2 py-0.5 bg-blue-50 text-teal-700 rounded-full text-[10px] font-medium border border-blue-200"
                             >
                               {c}
                             </span>
@@ -157,7 +157,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                     required
                     maxLength={50}
                     placeholder="e.g. Home, Sector 17, Office"
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-blue-500"
                   />
                   {createState.fieldErrors?.label && (
                     <p className="text-xs text-red-600 mt-1">{createState.fieldErrors.label}</p>
@@ -180,7 +180,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                       <button
                         type="button"
                         onClick={requestLocation}
-                        className="w-full px-4 py-2.5 border-2 border-dashed border-blue-300 rounded-xl text-xs hover:bg-blue-50 font-medium text-blue-700 transition-colors flex items-center justify-center gap-2"
+                        className="w-full px-4 py-2.5 border-2 border-dashed border-teal-300 rounded-xl text-xs hover:bg-blue-50 font-medium text-teal-700 transition-colors flex items-center justify-center gap-2"
                       >
                         📡 Detect My Location
                       </button>
@@ -198,7 +198,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                       id="radiusM"
                       name="radiusM"
                       defaultValue="1000"
-                      className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       <option value="500">500m (Block level)</option>
                       <option value="1000">1 km (Neighborhood)</option>
@@ -220,7 +220,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                         onClick={() => toggleCategory(cat.value)}
                         className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium ${
                           selectedCategories.includes(cat.value)
-                            ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                            ? 'bg-teal-700 text-white border-teal-700'
                             : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                         }`}
                       >
@@ -233,7 +233,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                 <button
                   type="submit"
                   disabled={createPending || !location}
-                  className="w-full py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 shadow-lg shadow-blue-500/20 transition-all"
+                  className="w-full py-2.5 bg-teal-700 text-white rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 shadow-lg shadow-blue-500/20 transition-all"
                 >
                   {createPending ? '⏳ Saving...' : '📍 Save Watch Area'}
                 </button>
@@ -268,7 +268,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                     name="channel_inApp"
                     type="checkbox"
                     defaultChecked={initialPrefs.channels.inApp}
-                    className="rounded text-blue-600 focus:ring-blue-500"
+                    className="rounded text-teal-700 focus:ring-teal-500"
                   />
                   <div>
                     <span className="text-sm font-medium text-gray-700">🔔 In-app Alerts</span>
@@ -281,7 +281,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                     name="channel_email"
                     type="checkbox"
                     defaultChecked={initialPrefs.channels.email}
-                    className="rounded text-blue-600 focus:ring-blue-500"
+                    className="rounded text-teal-700 focus:ring-teal-500"
                   />
                   <div>
                     <span className="text-sm font-medium text-gray-700">📧 Email Digests</span>
@@ -298,7 +298,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                     name="quietHours_enabled"
                     type="checkbox"
                     defaultChecked={initialPrefs.quietHours.enabled}
-                    className="rounded text-blue-600 focus:ring-blue-500"
+                    className="rounded text-teal-700 focus:ring-teal-500"
                   />
                   <div>
                     <span className="text-sm font-medium text-gray-700">Silence alerts at night</span>
@@ -312,7 +312,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                       type="time"
                       name="quietHours_start"
                       defaultValue={initialPrefs.quietHours.start}
-                      className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -321,7 +321,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                       type="time"
                       name="quietHours_end"
                       defaultValue={initialPrefs.quietHours.end}
-                      className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -335,7 +335,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                   id="language"
                   name="language"
                   defaultValue={initialPrefs.language}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
                   <option value="en">English</option>
                   <option value="hi">हिंदी (Hindi)</option>
@@ -353,19 +353,19 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
           </div>
 
           {/* Quick Tips */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+          <div className="bg-teal-50 border border-teal-200 rounded-xl p-5">
             <h3 className="font-bold text-gray-900 text-sm mb-3">💡 Tips</h3>
             <ul className="space-y-2 text-xs text-gray-600">
               <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">•</span>
+                <span className="text-teal-600 mt-0.5">•</span>
                 You can save up to 5 watch areas — home, office, school, etc.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">•</span>
+                <span className="text-teal-600 mt-0.5">•</span>
                 Category filters let you focus on specific issue types.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">•</span>
+                <span className="text-teal-600 mt-0.5">•</span>
                 Enable quiet hours to avoid late-night notifications.
               </li>
             </ul>

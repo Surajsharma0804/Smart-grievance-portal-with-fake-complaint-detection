@@ -159,7 +159,7 @@ export default function HowItWorks() {
         <div className="flex justify-center gap-4 flex-wrap">
           <Link
             href="/report"
-            className="px-7 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            className="px-7 py-3 bg-teal-700 text-white rounded-lg font-semibold hover:bg-teal-800 transition-colors"
           >
             Report an Issue →
           </Link>

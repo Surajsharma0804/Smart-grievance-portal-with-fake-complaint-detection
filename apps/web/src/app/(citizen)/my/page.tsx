@@ -4,7 +4,7 @@ import Link from 'next/link';
 const API_URL = process.env.API_BASE_URL || 'http://localhost:4000';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  SUBMITTED: { label: 'Submitted', color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200', icon: '📝' },
+  SUBMITTED: { label: 'Submitted', color: 'text-teal-700', bg: 'bg-blue-50 border-blue-200', icon: '📝' },
   ANALYZING: { label: 'AI Analyzing', color: 'text-yellow-700', bg: 'bg-yellow-50 border-yellow-200', icon: '🤖' },
   NEEDS_REVIEW: { label: 'Under Review', color: 'text-orange-700', bg: 'bg-orange-50 border-orange-200', icon: '🔍' },
   ROUTED: { label: 'Routed to Dept', color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200', icon: '🏛️' },
@@ -83,7 +83,7 @@ export default async function MyComplaintsPage() {
           <p className="text-gray-500 mb-6">Please sign in to view and manage your complaints.</p>
           <Link
             href="/login"
-            className="inline-block px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+            className="inline-block px-6 py-2.5 bg-teal-700 text-white rounded-lg text-sm font-semibold hover:bg-teal-800 transition-colors"
           >
             Sign In →
           </Link>
@@ -107,7 +107,7 @@ export default async function MyComplaintsPage() {
         </div>
         <Link
           href="/report"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-700 text-white rounded-lg text-sm font-semibold hover:bg-teal-800 transition-colors"
         >
           <span>📝</span> Report New Issue
         </Link>
@@ -116,9 +116,9 @@ export default async function MyComplaintsPage() {
       {/* Quick Stats */}
       {data.complaints.length > 0 && (
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
-            <p className="text-2xl font-bold text-blue-700">{data.total}</p>
-            <p className="text-xs text-blue-600 font-medium">Total Filed</p>
+          <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-teal-700">{data.total}</p>
+            <p className="text-xs text-teal-700 font-medium">Total Filed</p>
           </div>
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
             <p className="text-2xl font-bold text-amber-700">{activeCount}</p>
@@ -141,7 +141,7 @@ export default async function MyComplaintsPage() {
           </p>
           <Link
             href="/report"
-            className="inline-block px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+            className="inline-block px-6 py-2.5 bg-teal-700 text-white rounded-lg text-sm font-semibold hover:bg-teal-800 transition-colors"
           >
             📸 Report Your First Issue
           </Link>
@@ -162,14 +162,14 @@ export default async function MyComplaintsPage() {
               >
                 {/* Top color bar */}
                 <div className={`absolute top-0 left-0 w-full h-1 ${
-                  isActive ? 'bg-blue-500' : 'bg-green-500'
+                  isActive ? 'bg-teal-600' : 'bg-green-500'
                 }`} />
 
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="text-lg">{catIcon}</span>
-                      <h3 className="font-bold text-gray-900 text-sm truncate group-hover:text-blue-700 transition-colors">
+                      <h3 className="font-bold text-gray-900 text-sm truncate group-hover:text-teal-700 transition-colors">
                         {c.title}
                       </h3>
                     </div>
@@ -181,7 +181,7 @@ export default async function MyComplaintsPage() {
                       {c.updatedAt && (
                         <>
                           <span>&middot;</span>
-                          <span className="text-blue-600" suppressHydrationWarning>Updated {getTimeAgo(c.updatedAt)}</span>
+                          <span className="text-teal-700" suppressHydrationWarning>Updated {getTimeAgo(c.updatedAt)}</span>
                         </>
                       )}
                     </div>
@@ -195,7 +195,7 @@ export default async function MyComplaintsPage() {
                       <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
                         <div
                           className={`h-1.5 rounded-full transition-all ${
-                            isActive ? 'bg-blue-500' : 'bg-green-500'
+                            isActive ? 'bg-teal-600' : 'bg-green-500'
                           }`}
                           style={{ width: `${progress}%` }}
                         />

@@ -42,7 +42,7 @@ const CATEGORY_LABELS: Record<string, { label: string; icon: string; color: stri
 };
 
 const STATUS_STYLES: Record<string, { label: string; color: string; barColor: string }> = {
-  SUBMITTED: { label: 'Submitted', color: 'text-blue-700', barColor: 'bg-blue-500' },
+  SUBMITTED: { label: 'Submitted', color: 'text-teal-700', barColor: 'bg-teal-500' },
   ANALYZING: { label: 'Analyzing', color: 'text-yellow-700', barColor: 'bg-yellow-500' },
   NEEDS_REVIEW: { label: 'Under Review', color: 'text-orange-700', barColor: 'bg-orange-500' },
   ROUTED: { label: 'Routed', color: 'text-purple-700', barColor: 'bg-purple-500' },
@@ -115,7 +115,7 @@ export default async function StatsPage() {
       {/* Key Metrics */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {[
-          { label: 'Total Submitted', value: total, icon: '📋', bg: 'bg-blue-50 border-blue-200' },
+          { label: 'Total Submitted', value: total, icon: '📋', bg: 'bg-teal-50 border-teal-200' },
           { label: 'Resolved', value: resolved, icon: '✅', bg: 'bg-green-50 border-green-200' },
           { label: 'In Progress', value: inProgress, icon: '🔧', bg: 'bg-amber-50 border-amber-200' },
           { label: 'Pending', value: pending > 0 ? pending : 0, icon: '⏳', bg: 'bg-purple-50 border-purple-200' },

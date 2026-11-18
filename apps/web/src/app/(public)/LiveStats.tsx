@@ -77,7 +77,7 @@ export function LiveStats() {
       <div className="relative overflow-hidden bg-white border border-gray-200 rounded-2xl p-5 shadow-sm group hover:shadow-md transition-shadow">
         <div className="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-[40px] -mr-4 -mt-4 group-hover:bg-blue-100 transition-colors" />
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Resolution Rate</p>
-        <p className="text-3xl md:text-4xl font-extrabold text-blue-600 mt-2 tabular-nums">
+        <p className="text-3xl md:text-4xl font-extrabold text-teal-700 mt-2 tabular-nums">
           <AnimatedCounter target={rate} suffix="%" />
         </p>
         <p className="text-xs text-gray-400 mt-1">Complaints resolved</p>

@@ -20,7 +20,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200/60">
       <div className="mx-auto max-w-7xl px-4 flex items-center justify-between h-16">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
+          <div className="w-9 h-9 bg-teal-700 rounded-lg flex items-center justify-center">
             <span className="text-white text-lg">🏛️</span>
           </div>
           <div>
@@ -41,7 +41,7 @@ export function SiteHeader() {
                 href={link.href}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   active
-                    ? 'bg-blue-50 text-blue-700'
+                    ? 'bg-teal-50 text-teal-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
@@ -66,7 +66,7 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/register"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-teal-700 text-white rounded-lg text-sm font-semibold hover:bg-teal-800 transition-colors"
           >
             Register
           </Link>
@@ -103,7 +103,7 @@ export function SiteHeader() {
                   onClick={() => setMobileOpen(false)}
                   className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     active
-                      ? 'bg-blue-50 text-blue-700'
+                      ? 'bg-teal-50 text-teal-700'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
@@ -163,7 +163,7 @@ export function SiteFooter() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-teal-700 rounded-lg flex items-center justify-center">
                 <span className="text-white text-sm">🏛️</span>
               </div>
               <div>

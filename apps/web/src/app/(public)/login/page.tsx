@@ -27,7 +27,7 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md mt-8 sm:mt-16 px-4" suppressHydrationWarning>
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
+        <div className="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
           <span className="text-white text-2xl">🏛️</span>
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">Sign in to Nagrik Setu</h1>
@@ -35,13 +35,13 @@ export default function LoginPage() {
       </div>
 
       {state.error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-center gap-2">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex items-center gap-2">
           <span>⚠️</span> {state.error}
         </div>
       )}
 
       {/* Demo credentials */}
-      <div className="mb-6 p-4 bg-gradient-to-r from-slate-50 to-gray-50 border border-slate-200 rounded-2xl">
+      <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-xl">
         <p className="text-xs font-semibold text-slate-600 mb-2.5">Quick sign-in (demo accounts):</p>
         <div className="grid grid-cols-2 gap-1.5">
           {DEMO_ACCOUNTS.map((acc) => (
@@ -49,9 +49,9 @@ export default function LoginPage() {
               key={acc.email}
               type="button"
               onClick={() => autofill(acc.email)}
-              className="flex items-center gap-2 p-2 text-left bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all text-xs group"
+              className="flex items-center gap-2 p-2 text-left bg-white border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors text-xs"
             >
-              <span className="text-base group-hover:scale-110 transition-transform">{acc.icon}</span>
+              <span className="text-base">{acc.icon}</span>
               <div>
                 <span className="font-medium text-slate-800 block">{acc.label}</span>
                 <span className="text-[10px] text-slate-400">{acc.email}</span>
@@ -74,7 +74,7 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="you@example.com"
           />
           {state.fieldErrors?.email && (
@@ -93,7 +93,7 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
           {state.fieldErrors?.password && (
             <p className="text-xs text-red-600 mt-1">{state.fieldErrors.password}</p>
@@ -103,7 +103,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 text-sm shadow-lg shadow-blue-500/20 transition-all"
+          className="w-full py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 text-sm transition-colors"
         >
           {pending ? 'Signing in...' : 'Sign in'}
         </button>

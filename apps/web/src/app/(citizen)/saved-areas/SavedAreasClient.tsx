@@ -73,7 +73,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left: Saved Areas List & Add Form */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <div className="bg-white border border-gray-200 rounded-xl p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-bold text-gray-900">
                 Your Watch Areas
@@ -131,7 +131,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
 
           {/* Add Saved Area Form */}
           {initialAreas.length < 5 && (
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white border border-gray-200 rounded-xl p-6">
               <h2 className="text-lg font-bold text-gray-900 mb-1">Add New Watch Area</h2>
               <p className="text-xs text-gray-400 mb-4">Set up geo-fenced monitoring for a location you care about.</p>
 
@@ -233,7 +233,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                 <button
                   type="submit"
                   disabled={createPending || !location}
-                  className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl text-sm font-semibold hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 shadow-lg shadow-blue-500/20 transition-all"
+                  className="w-full py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 shadow-lg shadow-blue-500/20 transition-all"
                 >
                   {createPending ? '⏳ Saving...' : '📍 Save Watch Area'}
                 </button>
@@ -244,7 +244,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
 
         {/* Right: Notification Preferences */}
         <div className="space-y-6">
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm h-fit">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 h-fit">
             <h2 className="text-lg font-bold text-gray-900 mb-1">Notification Settings</h2>
             <p className="text-xs text-gray-400 mb-4">Configure how and when you receive alerts.</p>
 
@@ -353,7 +353,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
           </div>
 
           {/* Quick Tips */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-5">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
             <h3 className="font-bold text-gray-900 text-sm mb-3">💡 Tips</h3>
             <ul className="space-y-2 text-xs text-gray-600">
               <li className="flex items-start gap-2">

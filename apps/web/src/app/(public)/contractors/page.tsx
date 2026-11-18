@@ -81,18 +81,9 @@ export default async function ContractorsPage() {
   return (
     <div className="space-y-12 py-4">
       {/* Hero */}
-      <section className="text-center relative">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-amber-50 via-orange-50/30 to-transparent rounded-full blur-3xl" />
-        </div>
-        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full mb-4">
-          🏗️ Contractor Portal
-        </span>
+      <section className="text-center">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900">
-          Municipal{' '}
-          <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-            Repair Projects
-          </span>
+          Municipal Repair Projects
         </h1>
         <p className="mt-3 text-gray-600 max-w-xl mx-auto">
           Transparent bidding on civic infrastructure projects. View verified contractors,
@@ -101,13 +92,13 @@ export default async function ContractorsPage() {
         <div className="mt-6 flex justify-center gap-3">
           <Link
             href="/contractors/register"
-            className="px-6 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl text-sm font-semibold hover:from-amber-700 hover:to-orange-700 shadow-lg shadow-amber-500/20 transition-all"
+            className="px-6 py-2.5 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 transition-colors"
           >
             Register as Contractor
           </Link>
           <a
             href="#projects"
-            className="px-6 py-2.5 border border-gray-300 rounded-xl text-sm font-semibold hover:bg-white bg-white/80 shadow-sm transition-all"
+            className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors"
           >
             Browse Projects ↓
           </a>
@@ -122,7 +113,7 @@ export default async function ContractorsPage() {
           { label: 'Total Budget', value: formatCurrency(projects.reduce((s, p) => s + (p.estimatedCost || 0), 0)), icon: '💰', color: 'bg-green-50 border-green-200' },
           { label: 'Completed', value: projects.filter(p => p.status === 'COMPLETED').length, icon: '✅', color: 'bg-emerald-50 border-emerald-200' },
         ].map((stat) => (
-          <div key={stat.label} className={`${stat.color} border rounded-2xl p-4 text-center`}>
+          <div key={stat.label} className={`${stat.color} border rounded-xl p-4 text-center`}>
             <span className="text-2xl">{stat.icon}</span>
             <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
             <p className="text-xs text-gray-500 font-medium">{stat.label}</p>
@@ -143,7 +134,7 @@ export default async function ContractorsPage() {
         </div>
 
         {projects.length === 0 ? (
-          <div className="p-16 text-center bg-white border border-gray-200 rounded-2xl">
+          <div className="p-16 text-center bg-white border border-gray-200 rounded-xl">
             <div className="text-4xl mb-4">🏗️</div>
             <p className="text-gray-500 font-medium">No open projects at the moment</p>
             <p className="text-sm text-gray-400 mt-1">Projects are created when municipal complaints require infrastructure work. Check back soon.</p>
@@ -156,9 +147,8 @@ export default async function ContractorsPage() {
               return (
                 <div
                   key={project._id}
-                  className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow relative overflow-hidden"
+                  className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-300 transition-colors"
                 >
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-orange-400" />
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{icon}</span>
@@ -206,7 +196,7 @@ export default async function ContractorsPage() {
         </div>
 
         {contractors.length === 0 ? (
-          <div className="p-16 text-center bg-white border border-gray-200 rounded-2xl">
+          <div className="p-16 text-center bg-white border border-gray-200 rounded-xl">
             <div className="text-4xl mb-4">👷</div>
             <p className="text-gray-500 font-medium">No verified contractors yet</p>
             <p className="text-sm text-gray-400 mt-1">
@@ -216,9 +206,9 @@ export default async function ContractorsPage() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {contractors.map((c) => (
-              <div key={c._id} className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+              <div key={c._id} className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-300 transition-colors">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-11 h-11 rounded-full bg-amber-600 flex items-center justify-center text-white font-bold text-sm">
                     {c.companyName.charAt(0)}
                   </div>
                   <div>
@@ -261,7 +251,7 @@ export default async function ContractorsPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border border-amber-200/50 rounded-3xl p-8 text-center">
+      <section className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
         <h2 className="text-xl font-bold text-gray-900 mb-2">Are you a licensed contractor?</h2>
         <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
           Register on Nagrik Setu to access municipal repair projects, submit competitive bids,
@@ -269,7 +259,7 @@ export default async function ContractorsPage() {
         </p>
         <Link
           href="/contractors/register"
-          className="inline-block px-8 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl font-semibold hover:from-amber-700 hover:to-orange-700 shadow-lg shadow-amber-500/20 transition-all"
+          className="inline-block px-8 py-3 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-700 transition-colors"
         >
           Register as Contractor →
         </Link>

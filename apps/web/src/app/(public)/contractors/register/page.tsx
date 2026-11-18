@@ -78,7 +78,7 @@ export default function ContractorRegisterPage() {
       </div>
 
       {result?.ok ? (
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center">
+        <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
           <div className="text-4xl mb-4">✅</div>
           <h2 className="text-lg font-bold text-green-900 mb-2">Registration Submitted!</h2>
           <p className="text-sm text-green-700 mb-4">{result.message}</p>
@@ -90,7 +90,7 @@ export default function ContractorRegisterPage() {
           </Link>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-5">
+        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl p-6 space-y-5">
           {/* Company Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Company / Firm Name *</label>
@@ -209,7 +209,7 @@ export default function ContractorRegisterPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl text-sm font-semibold hover:from-amber-700 hover:to-orange-700 shadow-sm disabled:opacity-50 transition-all"
+              className="px-6 py-2.5 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 disabled:opacity-50 transition-colors"
             >
               {submitting ? 'Registering...' : 'Submit Registration'}
             </button>

@@ -13,13 +13,13 @@ export default function NotFound() {
       <div className="flex gap-3">
         <Link
           href="/"
-          className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl text-sm font-semibold hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/20 transition-all"
+          className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
         >
           ← Go Home
         </Link>
         <Link
           href="/stats"
-          className="px-6 py-2.5 border border-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-colors"
+          className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors"
         >
           View Statistics
         </Link>

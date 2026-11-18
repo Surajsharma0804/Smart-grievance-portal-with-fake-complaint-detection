@@ -20,7 +20,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200/60">
       <div className="mx-auto max-w-7xl px-4 flex items-center justify-between h-16">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+          <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
             <span className="text-white text-lg">🏛️</span>
           </div>
           <div>
@@ -66,7 +66,7 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/register"
-            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl text-sm font-semibold hover:from-blue-700 hover:to-blue-800 shadow-sm hover:shadow-md transition-all"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
           >
             Register
           </Link>
@@ -163,7 +163,7 @@ export function SiteFooter() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white text-sm">🏛️</span>
               </div>
               <div>

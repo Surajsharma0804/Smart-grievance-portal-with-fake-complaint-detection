@@ -99,12 +99,11 @@ export function DepartmentsList({ departments }: { departments: Department[] }) 
             return (
               <div
                 key={dept._id}
-                className={`${colors.bg} border ${colors.border} rounded-2xl p-5 hover:shadow-md transition-shadow relative overflow-hidden group`}
+                className={`${colors.bg} border ${colors.border} rounded-xl p-5 hover:border-gray-300 transition-colors`}
               >
-                <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${colors.accent}`} />
 
                 <div className="flex items-start justify-between mb-3">
-                  <div className="w-11 h-11 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm border border-gray-100 group-hover:scale-110 transition-transform">
+                  <div className="w-11 h-11 bg-white rounded-lg flex items-center justify-center text-2xl border border-gray-100">
                     {icon}
                   </div>
                   <span className="text-[10px] font-bold bg-white px-2 py-0.5 rounded-full text-gray-500 border border-gray-200">

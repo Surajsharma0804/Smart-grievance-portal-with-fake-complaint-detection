@@ -234,10 +234,15 @@ export default function ReportPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-2">Report a Civic Issue</h2>
-      <p className="text-gray-600 mb-6">
-        Describe the problem, attach evidence photos, and pin your exact GPS location. We&apos;ll route it to the right department.
-      </p>
+      <div className="mb-6">
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full mb-3">
+          📸 Civic Complaint Form
+        </span>
+        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Report a Civic Issue</h1>
+        <p className="text-gray-500 mt-1 text-sm">
+          Describe the problem, attach evidence photos, and pin your exact GPS location. We&apos;ll route it to the right department.
+        </p>
+      </div>
 
       {state.error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
@@ -245,7 +250,7 @@ export default function ReportPage() {
         </div>
       )}
 
-      <form action={action} className="space-y-5 bg-white border rounded-xl p-6 shadow-sm">
+      <form action={action} className="space-y-5 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
         <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
         <input type="hidden" name="lng" value={location?.lng ?? ''} />
         <input type="hidden" name="lat" value={location?.lat ?? ''} />
@@ -327,6 +332,7 @@ export default function ReportPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {uploads.map((item) => (
                 <div key={item.id} className="relative border rounded-lg overflow-hidden bg-gray-50 p-1">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={item.previewUrl} alt={item.name} className="w-full h-24 object-cover rounded" />
                   <div className="mt-1 flex items-center justify-between text-xs px-1">
                     {item.status === 'uploading' && <span className="text-blue-600 font-medium">Uploading...</span>}

@@ -96,7 +96,7 @@ export default async function ContractorsPage() {
         </h1>
         <p className="mt-3 text-gray-600 max-w-xl mx-auto">
           Transparent bidding on civic infrastructure projects. View verified contractors,
-          browse open projects, and track progress with AI-estimated costs.
+          browse open projects, and track progress with estimated costs.
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link
@@ -135,7 +135,7 @@ export default async function ContractorsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Open Projects for Bidding</h2>
-            <p className="text-sm text-gray-500 mt-1">AI-estimated costs based on category and historical data</p>
+            <p className="text-sm text-gray-500 mt-1">Cost estimates based on category and historical data</p>
           </div>
           <span className="text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-full font-medium">
             {projects.filter(p => p.status === 'OPEN' || p.status === 'BIDDING').length} available

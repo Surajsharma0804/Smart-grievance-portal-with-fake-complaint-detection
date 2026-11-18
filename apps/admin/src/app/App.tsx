@@ -2,9 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation, Link 
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Auth Context
-// ─────────────────────────────────────────────────────────────────────────────
 interface User {
   id: string;
   name: string;
@@ -70,9 +68,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Toast System
-// ─────────────────────────────────────────────────────────────────────────────
 interface Toast {
   id: string;
   message: string;
@@ -121,9 +117,7 @@ function ToastProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Shared UI Components
-// ─────────────────────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string }> = {
   SUBMITTED: { label: 'Submitted', bg: 'bg-gray-100', text: 'text-gray-800', border: 'border-gray-200' },
@@ -164,9 +158,7 @@ function EmptyState({ icon, title, subtitle }: { icon: string; title: string; su
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Login Page
-// ─────────────────────────────────────────────────────────────────────────────
 function LoginPage() {
   const { login, user } = useAuth();
   const navigate = useNavigate();
@@ -285,9 +277,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Dashboard Layout with Active Nav
-// ─────────────────────────────────────────────────────────────────────────────
 function DashboardLayout() {
   const { user, login, logout } = useAuth();
   const navigate = useNavigate();
@@ -407,9 +397,7 @@ function DashboardLayout() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // VALID TRANSITIONS MAP (matches shared/transitions.ts)
-// ─────────────────────────────────────────────────────────────────────────────
 const TRANSITIONS: Record<string, string[]> = {
   SUBMITTED: ['ANALYZING'],
   ANALYZING: ['NEEDS_REVIEW', 'ROUTED', 'LINKED_DUPLICATE'],
@@ -435,9 +423,7 @@ const TRANSITION_ACTIONS: Record<string, { label: string; color: string; icon: s
   REOPENED: { label: 'Reopen', color: 'bg-orange-600 hover:bg-orange-700', icon: '🔓' },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Officer Queue Page
-// ─────────────────────────────────────────────────────────────────────────────
 function QueuePage() {
   const navigate = useNavigate();
   const { addToast } = useToast();
@@ -600,9 +586,7 @@ function QueuePage() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Complaint Detail Page (slide-in from queue)
-// ─────────────────────────────────────────────────────────────────────────────
 function ComplaintDetailPage() {
   const navigate = useNavigate();
   const { addToast } = useToast();
@@ -880,9 +864,7 @@ function ComplaintDetailPage() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Review Workbench
-// ─────────────────────────────────────────────────────────────────────────────
 function ReviewPage() {
   const { user } = useAuth();
   const { addToast } = useToast();
@@ -1011,9 +993,7 @@ function ReviewPage() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Analytics Page — Real Data from API
-// ─────────────────────────────────────────────────────────────────────────────
 function AnalyticsPage() {
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -1159,9 +1139,7 @@ function AnalyticsPage() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Departments Page
-// ─────────────────────────────────────────────────────────────────────────────
 function DeptPage() {
   const { user } = useAuth();
   const { addToast } = useToast();
@@ -1293,9 +1271,7 @@ function DeptPage() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Users Page
-// ─────────────────────────────────────────────────────────────────────────────
 function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1392,9 +1368,7 @@ function UsersPage() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Contractors Management Page
-// ─────────────────────────────────────────────────────────────────────────────
 function ContractorsPage() {
   const { user } = useAuth();
   const { addToast } = useToast();
@@ -1642,9 +1616,7 @@ function ContractorsPage() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // App Entry
-// ─────────────────────────────────────────────────────────────────────────────
 export function App() {
   return (
     <BrowserRouter basename="/staff">

@@ -6,15 +6,15 @@ const FEATURES = [
   {
     step: '01',
     title: 'Report with Photo & GPS',
-    desc: 'Snap a photo, pin your exact location, and describe the issue. Our AI auto-categorizes and checks for duplicates.',
+    desc: 'Snap a photo, pin your exact location, and describe the issue. Auto-categorization and duplicate checking happens in the background.',
     icon: '📸',
     color: 'from-blue-500 to-blue-600',
     bg: 'bg-blue-50',
   },
   {
     step: '02',
-    title: 'AI Triage & Smart Routing',
-    desc: 'Machine learning scores severity, detects fake complaints, and routes to the right municipal department — all within minutes.',
+    title: 'Smart Triage & Routing',
+    desc: 'Severity scoring, fake complaint detection, and automatic routing to the right municipal department — all within minutes.',
     icon: '🤖',
     color: 'from-purple-500 to-purple-600',
     bg: 'bg-purple-50',
@@ -38,7 +38,7 @@ const FEATURES = [
 ];
 
 const TRUST_BADGES = [
-  { icon: '🛡️', label: 'AI-Powered Detection' },
+  { icon: '🛡️', label: 'Fraud Detection' },
   { icon: '📍', label: 'GPS Verified Location' },
   { icon: '⏱️', label: 'SLA Guaranteed' },
   { icon: '🔍', label: 'Transparent Tracking' },
@@ -70,7 +70,7 @@ const TESTIMONIALS = [
 export default function HomePage() {
   return (
     <div className="space-y-20" suppressHydrationWarning>
-      {/* ═══ Hero Section ═══ */}
+      {/* Hero */}
       <section className="relative text-center pt-16 pb-12 overflow-hidden">
         {/* Decorative background */}
         <div className="absolute inset-0 -z-10">
@@ -84,7 +84,7 @@ export default function HomePage() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600" />
           </span>
-          Smart Grievance Redressal & Fake Complaint Detection
+          Smart Grievance Redressal System
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 leading-[1.1]">
@@ -97,7 +97,7 @@ export default function HomePage() {
 
         <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
           Submit complaints with photos and GPS location, track progress transparently,
-          and hold your municipality accountable with AI-powered verification.
+          and hold your municipality accountable with verified photo evidence.
         </p>
 
         <div className="mt-10 flex justify-center gap-4 flex-wrap">
@@ -122,7 +122,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ Trust Badges ═══ */}
+      {/* Trust Badges */}
       <section className="flex flex-wrap justify-center gap-3 md:gap-4 -mt-8">
         {TRUST_BADGES.map((b) => (
           <div
@@ -135,7 +135,7 @@ export default function HomePage() {
         ))}
       </section>
 
-      {/* ═══ Live Stats ═══ */}
+      {/* Live Stats */}
       <section>
         <div className="text-center mb-8">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
@@ -151,12 +151,12 @@ export default function HomePage() {
         <LiveStats />
       </section>
 
-      {/* ═══ How It Works ═══ */}
+      {/* How It Works */}
       <section>
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900">How It Works</h2>
           <p className="text-gray-500 text-sm mt-2 max-w-lg mx-auto">
-            From complaint to resolution — a fully transparent, AI-assisted pipeline
+            From complaint to resolution — a fully transparent pipeline
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -177,7 +177,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ Testimonials ═══ */}
+      {/* Testimonials */}
       <section className="bg-gradient-to-b from-gray-50 to-white rounded-3xl p-8 md:p-12 border border-gray-100">
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900">What Citizens Say</h2>
@@ -209,7 +209,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ Contractor Portal CTA ═══ */}
+      {/* Contractor Portal */}
       <section className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border border-amber-200/50 rounded-3xl p-8 md:p-12">
         <div className="flex flex-col md:flex-row items-center gap-8">
           <div className="flex-1">
@@ -225,7 +225,7 @@ export default function HomePage() {
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="flex items-center gap-2 text-sm text-gray-700">
                 <span className="w-5 h-5 bg-amber-100 rounded flex items-center justify-center text-xs">💰</span>
-                AI Cost Estimation
+                Cost Estimation
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-700">
                 <span className="w-5 h-5 bg-amber-100 rounded flex items-center justify-center text-xs">📋</span>
@@ -251,7 +251,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ Staff Console CTA ═══ */}
+      {/* Staff Console */}
       <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-8 md:p-12 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl" />
@@ -286,7 +286,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ Final CTA ═══ */}
+      {/* CTA */}
       <section className="text-center py-12">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
           Ready to make your city better?

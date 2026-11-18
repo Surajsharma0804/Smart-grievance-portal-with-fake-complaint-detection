@@ -4,7 +4,7 @@ import { requireAuth, requireRole } from '../middleware/auth';
 
 export const contractorRouter = Router();
 
-// ───── Public Endpoints (no auth) ─────
+// Public Endpoints
 
 /**
  * GET /public/contractors — list verified contractors
@@ -33,7 +33,7 @@ contractorRouter.get('/public/projects', async (req: Request, res: Response) => 
       .populate('complaintId', 'publicId title category address')
       .limit(50);
 
-    // AI cost estimation - compute from category averages
+    // cost estimation - compute from category averages
     const projectsWithEstimates = projects.map((p) => {
       const pObj = p.toObject();
       if (!pObj.estimatedCost) {
@@ -70,7 +70,7 @@ contractorRouter.get('/public/projects/:id', async (req: Request, res: Response)
   }
 });
 
-// ───── Authenticated Contractor Endpoints ─────
+// Authenticated Contractor Endpoints
 
 /**
  * POST /contractors/register — register as contractor
@@ -209,7 +209,7 @@ contractorRouter.get(
   },
 );
 
-// ───── Admin Endpoints ─────
+// Admin Endpoints
 
 /**
  * POST /admin/projects — create project from a complaint (staff only)
@@ -339,7 +339,7 @@ contractorRouter.patch(
   },
 );
 
-// ───── AI Cost Estimation Helper ─────
+// Cost Estimation
 
 const COST_ESTIMATES: Record<string, { base: number; label: string }> = {
   ROADS: { base: 150000, label: 'Road repair' },

@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'How It Works | Nagrik Setu',
-  description: 'Learn how Nagrik Setu processes civic grievances from submission to resolution using AI-powered analysis.',
+  description: 'Step-by-step guide to filing and tracking civic grievances on Nagrik Setu.',
 };
 
 const STEPS = [
@@ -20,8 +20,8 @@ const STEPS = [
   {
     step: '02',
     icon: '🤖',
-    title: 'AI Analysis & Verification',
-    desc: 'Our machine learning pipeline runs image forensics to detect manipulated photos, checks for duplicate complaints using semantic and visual similarity matching, and scores the complaint severity. Fake or duplicate complaints are flagged automatically.',
+    title: 'Analysis & Verification',
+    desc: 'The system runs image forensics to detect manipulated photos, checks for duplicate complaints using semantic and visual similarity matching, and scores complaint severity. Fake or duplicate complaints are flagged automatically.',
     details: ['Error Level Analysis for image tampering', 'Perceptual & difference hash matching', 'Visual Language Model classification', 'Trust score computed from user history'],
     color: 'from-purple-500 to-purple-600',
     bg: 'bg-purple-50',
@@ -73,7 +73,7 @@ const KEY_FEATURES = [
   {
     icon: '🛡️',
     title: 'Fake Complaint Detection',
-    desc: 'AI-powered image forensics using Error Level Analysis, perceptual hashing, and EXIF metadata inspection to flag manipulated or stock photos.',
+    desc: 'Image forensics using Error Level Analysis, perceptual hashing, and EXIF metadata inspection to flag manipulated or stock photos.',
     accent: 'bg-red-50 border-red-100',
   },
   {
@@ -126,7 +126,7 @@ export default function HowItWorks() {
           </span>
         </h1>
         <p className="mt-4 text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
-          A fully transparent, AI-assisted pipeline that ensures every civic grievance
+          A fully transparent pipeline that ensures every civic grievance
           is verified, routed, tracked, and resolved with accountability.
         </p>
       </section>
@@ -190,7 +190,7 @@ export default function HowItWorks() {
           </span>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900">What Makes It Smart</h2>
           <p className="text-gray-500 text-sm mt-2 max-w-lg mx-auto">
-            Advanced AI and machine learning capabilities that power every stage of the pipeline
+            Technologies and techniques that power each stage of the pipeline
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">

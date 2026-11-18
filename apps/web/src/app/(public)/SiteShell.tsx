@@ -172,7 +172,7 @@ export function SiteFooter() {
               </div>
             </div>
             <p className="text-sm leading-relaxed text-gray-500">
-              AI-powered civic grievance redressal platform with fake complaint detection,
+              Civic grievance redressal platform with complaint verification,
               SLA tracking, and transparent resolution.
             </p>
             <div className="flex gap-3 mt-4">
@@ -209,7 +209,7 @@ export function SiteFooter() {
 
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-600">
-            © {new Date().getFullYear()} Nagrik Setu. Smart Grievance Redressal &amp; Fake Complaint Detection System.
+            © {new Date().getFullYear()} Nagrik Setu. Smart Grievance Redressal Portal.
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-600">
             <span className="flex items-center gap-1">

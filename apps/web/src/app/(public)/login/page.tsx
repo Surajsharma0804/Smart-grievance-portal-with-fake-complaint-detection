@@ -3,6 +3,7 @@
 import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { loginAction, type AuthState } from '@/lib/auth-actions';
+import { NagrikSetuIcon } from '@/components/Logo';
 
 const initial: AuthState = {};
 
@@ -27,9 +28,7 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md mt-8 sm:mt-16 px-4" suppressHydrationWarning>
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="w-14 h-14 bg-teal-700 rounded-xl flex items-center justify-center mx-auto mb-4">
-          <span className="text-white text-2xl">🏛️</span>
-        </div>
+        <NagrikSetuIcon size="lg" className="mx-auto mb-4" />
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">Sign in to Nagrik Setu</h1>
         <p className="text-sm text-gray-500 mt-1.5">Access citizen services or staff management console</p>
       </div>

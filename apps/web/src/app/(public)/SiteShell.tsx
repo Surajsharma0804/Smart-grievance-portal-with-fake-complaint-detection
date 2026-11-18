@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { NagrikSetuIcon } from '@/components/Logo';
 
 const NAV_LINKS = [
   { href: '/how-it-works', label: 'How It Works' },
@@ -20,9 +21,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200/60">
       <div className="mx-auto max-w-7xl px-4 flex items-center justify-between h-16">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 bg-teal-700 rounded-lg flex items-center justify-center">
-            <span className="text-white text-lg">🏛️</span>
-          </div>
+          <NagrikSetuIcon size="md" className="group-hover:opacity-95 transition-opacity" />
           <div>
             <span className="font-bold text-gray-900 text-lg tracking-tight">Nagrik Setu</span>
             <span className="hidden sm:block text-[9px] text-gray-500 -mt-0.5 font-medium tracking-wide">
@@ -162,13 +161,11 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-teal-700 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm">🏛️</span>
-              </div>
+            <div className="flex items-center gap-2.5 mb-4">
+              <NagrikSetuIcon size="sm" />
               <div>
                 <p className="font-bold text-white text-sm">Nagrik Setu</p>
-                <p className="text-[9px] text-gray-500">नागरिक सेतु</p>
+                <p className="text-[9px] text-gray-400">नागरिक सेतु</p>
               </div>
             </div>
             <p className="text-sm leading-relaxed text-gray-500">

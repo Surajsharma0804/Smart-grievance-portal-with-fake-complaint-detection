@@ -24,6 +24,30 @@ const AuthContext = createContext<AuthCtx>({
   logout: async () => {},
 });
 
+function NagrikSetuIcon({ className = 'w-9 h-9' }: { className?: string }) {
+  return (
+    <div className={`relative shrink-0 rounded-xl overflow-hidden shadow-xs ${className}`}>
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+        <rect width="100" height="100" rx="22" fill="#0f766e" />
+        <rect x="2" y="2" width="96" height="96" rx="20" stroke="white" strokeOpacity="0.16" strokeWidth="2" />
+        <circle cx="50" cy="22" r="5" fill="#f59e0b" />
+        <path d="M50 12 L52.2 18 L58 22 L52.2 26 L50 32 L47.8 26 L42 22 L47.8 18 Z" fill="#f59e0b" />
+        <circle cx="50" cy="22" r="2" fill="#ffffff" />
+        <path d="M16 68 C24 40, 36 33, 50 33 C64 33, 76 40, 84 68" stroke="white" strokeWidth="4.5" strokeLinecap="round" />
+        <path d="M14 54 L86 54" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+        <path d="M32 44 L32 54" stroke="#f59e0b" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M44 35 L44 54" stroke="#f59e0b" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M56 35 L56 54" stroke="#f59e0b" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M68 44 L68 54" stroke="#f59e0b" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M17 54 L17 72" stroke="white" strokeWidth="5" strokeLinecap="round" />
+        <path d="M83 54 L83 72" stroke="white" strokeWidth="5" strokeLinecap="round" />
+        <path d="M28 76 Q39 73 50 76 T72 76" stroke="white" strokeOpacity="0.65" strokeWidth="2" strokeLinecap="round" />
+        <path d="M35 82 Q43 80 50 82 T65 82" stroke="white" strokeOpacity="0.35" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </div>
+  );
+}
+
 function useAuth() {
   return useContext(AuthContext);
 }
@@ -186,14 +210,12 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
-      <div className="w-full max-w-sm p-8 border border-slate-200 rounded-2xl bg-white shadow-lg space-y-6">
+    <div className="flex items-center justify-center min-h-screen bg-slate-50 p-4">
+      <div className="w-full max-w-sm p-8 border border-slate-200 rounded-2xl bg-white shadow-sm space-y-6">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 rounded-xl mb-4">
-            <span className="text-2xl text-white">🏛️</span>
-          </div>
+          <NagrikSetuIcon className="w-14 h-14 mx-auto mb-4" />
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Nagrik Setu</h1>
-          <p className="text-sm text-slate-500 mt-1">Staff & Administration Console</p>
+          <p className="text-sm text-slate-500 mt-1">Staff &amp; Administration Console</p>
         </div>
 
         {error && (
@@ -312,9 +334,12 @@ function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <aside className="w-64 border-r border-slate-200 bg-white flex flex-col">
-        <div className="p-5 border-b border-slate-100">
-          <h2 className="font-bold text-lg text-slate-900 tracking-tight">Nagrik Setu</h2>
-          <p className="text-xs text-slate-500">Staff & Review Console</p>
+        <div className="p-4 border-b border-slate-100 flex items-center gap-3">
+          <NagrikSetuIcon className="w-9 h-9" />
+          <div>
+            <h2 className="font-bold text-base text-slate-900 tracking-tight leading-tight">Nagrik Setu</h2>
+            <p className="text-[11px] text-slate-500 leading-tight">Staff Console</p>
+          </div>
         </div>
 
         <nav className="flex-1 p-3 space-y-0.5">
@@ -324,7 +349,7 @@ function DashboardLayout() {
               to={n.to}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive(n.to)
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                  ? 'bg-teal-50 text-teal-700 border border-teal-200'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent'
               }`}
             >

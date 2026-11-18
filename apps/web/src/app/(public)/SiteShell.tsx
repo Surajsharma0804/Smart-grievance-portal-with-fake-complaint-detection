@@ -26,7 +26,7 @@ export function SiteHeader() {
           <div>
             <span className="font-bold text-gray-900 text-lg tracking-tight">Nagrik Setu</span>
             <span className="hidden sm:block text-[9px] text-gray-500 -mt-0.5 font-medium tracking-wide">
-              नागरिक सेतु — Smart Grievance Portal
+              नागरिक सेतु | Smart Grievance Portal
             </span>
           </div>
         </Link>

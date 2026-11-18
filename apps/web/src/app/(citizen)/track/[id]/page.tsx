@@ -105,8 +105,8 @@ const STATUS_COLORS: Record<string, string> = {
   SUBMITTED: 'bg-teal-500',
   ANALYZING: 'bg-yellow-500',
   NEEDS_REVIEW: 'bg-orange-500',
-  ROUTED: 'bg-purple-500',
-  ASSIGNED: 'bg-indigo-500',
+  ROUTED: 'bg-sky-500',
+  ASSIGNED: 'bg-cyan-500',
   IN_PROGRESS: 'bg-teal-500',
   RESOLVED: 'bg-green-500',
   CLOSED: 'bg-gray-400',
@@ -215,7 +215,7 @@ export default async function TrackPage({ params }: TrackPageProps) {
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{complaint.publicId}</span>
               {categoryLabel && (
-                <span className="text-xs text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full font-medium">
+                <span className="text-xs text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full font-medium">
                   {categoryLabel}
                 </span>
               )}
@@ -263,7 +263,7 @@ export default async function TrackPage({ params }: TrackPageProps) {
                       stepStatus === 'done'
                         ? 'bg-green-500 border-green-500 text-white'
                         : stepStatus === 'current'
-                        ? 'bg-blue-500 border-blue-500 text-white animate-pulse'
+                        ? 'bg-teal-600 border-teal-600 text-white'
                         : 'bg-gray-100 border-gray-200 text-gray-400'
                     }`}
                   >

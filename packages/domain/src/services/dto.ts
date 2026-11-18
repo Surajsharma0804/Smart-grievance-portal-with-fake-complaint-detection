@@ -1,7 +1,7 @@
 import type { IComplaint } from '../models/complaint';
 
 /**
- * Public DTO — strips internal fields, hides anonymous reporter,
+ * Public DTO - strips internal fields, hides anonymous reporter,
  * and rounds coordinates to reduce precision for public map display.
  */
 

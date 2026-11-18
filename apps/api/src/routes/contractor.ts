@@ -7,7 +7,7 @@ export const contractorRouter = Router();
 // Public Endpoints
 
 /**
- * GET /public/contractors — list verified contractors
+ * GET /public/contractors - list verified contractors
  */
 contractorRouter.get('/public/contractors', async (_req: Request, res: Response) => {
   try {
@@ -22,7 +22,7 @@ contractorRouter.get('/public/contractors', async (_req: Request, res: Response)
 });
 
 /**
- * GET /public/projects — list open projects for bidding
+ * GET /public/projects - list open projects for bidding
  */
 contractorRouter.get('/public/projects', async (req: Request, res: Response) => {
   try {
@@ -49,7 +49,7 @@ contractorRouter.get('/public/projects', async (req: Request, res: Response) => 
 });
 
 /**
- * GET /public/projects/:id — single project with bids count
+ * GET /public/projects/:id - single project with bids count
  */
 contractorRouter.get('/public/projects/:id', async (req: Request, res: Response) => {
   try {
@@ -73,7 +73,7 @@ contractorRouter.get('/public/projects/:id', async (req: Request, res: Response)
 // Authenticated Contractor Endpoints
 
 /**
- * POST /contractors/register — register as contractor
+ * POST /contractors/register - register as contractor
  */
 contractorRouter.post(
   '/contractors/register',
@@ -109,7 +109,7 @@ contractorRouter.post(
 );
 
 /**
- * GET /contractors/me — get own contractor profile
+ * GET /contractors/me - get own contractor profile
  */
 contractorRouter.get(
   '/contractors/me',
@@ -129,7 +129,7 @@ contractorRouter.get(
 );
 
 /**
- * POST /projects/:id/bid — submit a bid on a project
+ * POST /projects/:id/bid - submit a bid on a project
  */
 contractorRouter.post(
   '/projects/:id/bid',
@@ -186,7 +186,7 @@ contractorRouter.post(
 );
 
 /**
- * GET /contractors/my-bids — list bids by current contractor
+ * GET /contractors/my-bids - list bids by current contractor
  */
 contractorRouter.get(
   '/contractors/my-bids',
@@ -212,7 +212,7 @@ contractorRouter.get(
 // Admin Endpoints
 
 /**
- * POST /admin/projects — create project from a complaint (staff only)
+ * POST /admin/projects - create project from a complaint (staff only)
  */
 contractorRouter.post(
   '/admin/projects',
@@ -249,7 +249,7 @@ contractorRouter.post(
 );
 
 /**
- * POST /admin/projects/:id/award — award project to a contractor
+ * POST /admin/projects/:id/award - award project to a contractor
  */
 contractorRouter.post(
   '/admin/projects/:id/award',
@@ -295,7 +295,7 @@ contractorRouter.post(
 );
 
 /**
- * GET /admin/contractors — list all contractors (for admin management)
+ * GET /admin/contractors - list all contractors (for admin management)
  */
 contractorRouter.get(
   '/admin/contractors',
@@ -314,7 +314,7 @@ contractorRouter.get(
 );
 
 /**
- * PATCH /admin/contractors/:id/verify — verify/unverify a contractor
+ * PATCH /admin/contractors/:id/verify - verify/unverify a contractor
  */
 contractorRouter.patch(
   '/admin/contractors/:id/verify',

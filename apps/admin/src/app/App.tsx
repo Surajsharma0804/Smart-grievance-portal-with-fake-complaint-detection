@@ -490,7 +490,7 @@ function QueuePage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Officer Work Queue</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {complaints.length} grievance{complaints.length !== 1 ? 's' : ''} in queue — click any row to view details.
+            {complaints.length} grievance{complaints.length !== 1 ? 's' : ''} in queue - click any row to view details.
           </p>
         </div>
         <button
@@ -836,7 +836,7 @@ function ComplaintDetailPage() {
               {complaint.anonymous && (
                 <div>
                   <dt className="text-slate-500 text-xs">Anonymous</dt>
-                  <dd className="font-medium text-amber-700">Yes — identity hidden</dd>
+                  <dd className="font-medium text-amber-700">Yes - identity hidden</dd>
                 </div>
               )}
             </dl>
@@ -993,7 +993,7 @@ function ReviewPage() {
   );
 }
 
-// Analytics Page — Real Data from API
+// Analytics Page - Real Data from API
 function AnalyticsPage() {
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -1521,8 +1521,8 @@ function ContractorsPage() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-slate-900 text-xs">{c.userId?.name || '—'}</p>
-                      <p className="text-slate-400 text-xs">{c.userId?.email || '—'}</p>
+                      <p className="text-slate-900 text-xs">{c.userId?.name || '-'}</p>
+                      <p className="text-slate-400 text-xs">{c.userId?.email || '-'}</p>
                     </td>
                     <td className="px-4 py-3 text-slate-600">{c.experience || 0}y</td>
                     <td className="px-4 py-3">
@@ -1592,14 +1592,14 @@ function ContractorsPage() {
                         <p className="font-medium text-slate-900 truncate max-w-xs">{p.title}</p>
                         <p className="text-xs text-slate-400 truncate max-w-xs">{p.description}</p>
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-600">{p.category || '—'}</td>
+                      <td className="px-4 py-3 text-xs text-slate-600">{p.category || '-'}</td>
                       <td className="px-4 py-3">
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${pStatus.color}`}>
                           {pStatus.label}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm font-medium text-green-700">
-                        {p.estimatedCost ? `₹${p.estimatedCost.toLocaleString('en-IN')}` : '—'}
+                        {p.estimatedCost ? `₹${p.estimatedCost.toLocaleString('en-IN')}` : ' - '}
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-500">
                         {new Date(p.createdAt).toLocaleDateString('en-IN')}

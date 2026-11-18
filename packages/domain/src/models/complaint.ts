@@ -67,7 +67,7 @@ export interface IComplaint extends Document {
   title: string;
   description?: string;
   language?: string;
-  /** GeoJSON Point — coordinates in [longitude, latitude] order. */
+  /** GeoJSON Point - coordinates in [longitude, latitude] order. */
   location: {
     type: 'Point';
     coordinates: [number, number]; // [lng, lat]

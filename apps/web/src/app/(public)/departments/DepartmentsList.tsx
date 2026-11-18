@@ -24,16 +24,16 @@ const DEPT_ICONS: Record<string, string> = {
 };
 
 const DEPT_COLORS: Record<string, { bg: string; border: string; accent: string }> = {
-  RD: { bg: 'bg-amber-50', border: 'border-amber-200', accent: 'from-amber-500 to-orange-500' },
-  SN: { bg: 'bg-green-50', border: 'border-green-200', accent: 'from-green-500 to-emerald-500' },
-  WS: { bg: 'bg-blue-50', border: 'border-blue-200', accent: 'from-blue-500 to-cyan-500' },
-  EL: { bg: 'bg-yellow-50', border: 'border-yellow-200', accent: 'from-yellow-500 to-amber-500' },
-  SL: { bg: 'bg-orange-50', border: 'border-orange-200', accent: 'from-orange-400 to-yellow-500' },
-  TM: { bg: 'bg-red-50', border: 'border-red-200', accent: 'from-red-500 to-rose-500' },
-  PG: { bg: 'bg-emerald-50', border: 'border-emerald-200', accent: 'from-emerald-500 to-teal-500' },
-  PH: { bg: 'bg-purple-50', border: 'border-purple-200', accent: 'from-purple-500 to-violet-500' },
-  SA: { bg: 'bg-amber-50', border: 'border-amber-200', accent: 'from-amber-600 to-yellow-600' },
-  EN: { bg: 'bg-gray-50', border: 'border-gray-200', accent: 'from-gray-500 to-slate-500' },
+  RD: { bg: 'bg-amber-50', border: 'border-amber-200', accent: 'bg-amber-500' },
+  SN: { bg: 'bg-green-50', border: 'border-green-200', accent: 'bg-green-500' },
+  WS: { bg: 'bg-blue-50', border: 'border-blue-200', accent: 'bg-blue-500' },
+  EL: { bg: 'bg-yellow-50', border: 'border-yellow-200', accent: 'bg-yellow-500' },
+  SL: { bg: 'bg-orange-50', border: 'border-orange-200', accent: 'bg-orange-400' },
+  TM: { bg: 'bg-red-50', border: 'border-red-200', accent: 'bg-red-500' },
+  PG: { bg: 'bg-emerald-50', border: 'border-emerald-200', accent: 'bg-emerald-500' },
+  PH: { bg: 'bg-rose-50', border: 'border-rose-200', accent: 'bg-rose-500' },
+  SA: { bg: 'bg-amber-50', border: 'border-amber-200', accent: 'bg-amber-600' },
+  EN: { bg: 'bg-gray-50', border: 'border-gray-200', accent: 'bg-gray-500' },
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -50,7 +50,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   OTHER: 'Other',
 };
 
-const DEFAULT_COLOR = { bg: 'bg-gray-50', border: 'border-gray-200', accent: 'from-gray-500 to-slate-500' };
+const DEFAULT_COLOR = { bg: 'bg-gray-50', border: 'border-gray-200', accent: 'bg-gray-500' };
 
 export function DepartmentsList({ departments }: { departments: Department[] }) {
   const [search, setSearch] = useState('');
@@ -76,7 +76,7 @@ export function DepartmentsList({ departments }: { departments: Department[] }) 
             placeholder="Search departments or categories..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-purple-400 focus:border-purple-400 focus:outline-none transition-shadow"
+            className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none transition-shadow"
           />
         </div>
       </div>

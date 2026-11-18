@@ -48,7 +48,7 @@ export function LiveStats() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
       <div className="relative overflow-hidden bg-white border border-gray-200 rounded-2xl p-5 shadow-sm group hover:shadow-md transition-shadow">
-        <div className="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-[40px] -mr-4 -mt-4 group-hover:bg-blue-100 transition-colors" />
+        <div className="absolute top-0 right-0 w-20 h-20 bg-teal-50 rounded-bl-[40px] -mr-4 -mt-4 group-hover:bg-teal-100 transition-colors" />
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Reported</p>
         <p className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2 tabular-nums">
           <AnimatedCounter target={total} />
@@ -75,7 +75,7 @@ export function LiveStats() {
       </div>
 
       <div className="relative overflow-hidden bg-white border border-gray-200 rounded-2xl p-5 shadow-sm group hover:shadow-md transition-shadow">
-        <div className="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-[40px] -mr-4 -mt-4 group-hover:bg-blue-100 transition-colors" />
+        <div className="absolute top-0 right-0 w-20 h-20 bg-teal-50 rounded-bl-[40px] -mr-4 -mt-4 group-hover:bg-teal-100 transition-colors" />
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Resolution Rate</p>
         <p className="text-3xl md:text-4xl font-extrabold text-teal-700 mt-2 tabular-nums">
           <AnimatedCounter target={rate} suffix="%" />

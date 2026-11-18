@@ -12,7 +12,7 @@ const FEATURES = [
   {
     step: '02',
     title: 'Triage & Routing',
-    desc: 'Severity scoring, fake complaint detection, and automatic routing to the right municipal department — within minutes.',
+    desc: 'Severity scoring, fake complaint detection, and automatic routing to the right municipal department, all within minutes.',
     icon: '⚡',
   },
   {
@@ -41,7 +41,7 @@ const TESTIMONIALS = [
   {
     name: 'Priya Sharma',
     role: 'Resident, Sector 22',
-    text: 'Reported a broken streetlight near my colony. Got fixed in 36 hours! The tracking was so transparent — I could see exactly when the officer picked it up.',
+    text: 'Reported a broken streetlight near my colony. Got fixed in 36 hours! The tracking was so transparent, I could see exactly when the officer picked it up.',
     rating: 5,
   },
   {
@@ -53,7 +53,7 @@ const TESTIMONIALS = [
   {
     name: 'Anita Verma',
     role: 'Teacher, Sector 35',
-    text: 'What impressed me most is the duplicate detection. Someone had already reported the same drain issue — the system linked them and prioritized it.',
+    text: 'What impressed me most is the duplicate detection. Someone had already reported the same drain issue. The system linked them and prioritized it.',
     rating: 4,
   },
 ];
@@ -123,7 +123,7 @@ export default function HomePage() {
       <section>
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900">How It Works</h2>
-          <p className="text-gray-500 text-sm mt-2">From complaint to resolution — a fully transparent process</p>
+          <p className="text-gray-500 text-sm mt-2">From complaint to resolution - a fully transparent process</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {FEATURES.map((f) => (
@@ -212,7 +212,7 @@ export default function HomePage() {
           <p className="text-slate-400 mt-3 text-sm leading-relaxed max-w-2xl">
             Authorized officers, department heads, and reviewers manage complaint queues,
             inspect flagged duplicate clusters, run analytics dashboards, and verify
-            photo proof — all in a dedicated staff portal.
+            photo proof, all from a dedicated staff portal.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link

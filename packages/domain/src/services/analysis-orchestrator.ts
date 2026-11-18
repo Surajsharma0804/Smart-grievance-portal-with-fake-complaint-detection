@@ -159,7 +159,7 @@ export async function runAnalysis(
               to: ComplaintStatus.NEEDS_REVIEW,
               by: complaint.reporterId,
               at: new Date(),
-              note: 'Analysis failed — sent to manual review',
+              note: 'Analysis failed - sent to manual review',
             },
           },
         },
@@ -215,7 +215,7 @@ async function runStage(
       await stageRouting(complaint, ctx);
       break;
     case AnalysisStage.NOTIFY:
-      // Notification is a placeholder — actual SSE/email is wired in Phase 3
+      // Notification is a placeholder - actual SSE/email is wired in Phase 3
       break;
   }
 }
@@ -268,7 +268,7 @@ async function stageIngest(
 
       ctx.imageBuffers.push(buffer);
     } catch (err) {
-      // Log and continue — partial ingest is still useful
+      // Log and continue - partial ingest is still useful
       ctx.imageBuffers.push(Buffer.alloc(0));
     }
   }

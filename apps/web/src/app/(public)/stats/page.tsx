@@ -37,7 +37,7 @@ const CATEGORY_LABELS: Record<string, { label: string; icon: string; color: stri
   PARKS: { label: 'Parks & Gardens', icon: '🌳', color: 'bg-green-500' },
   PUBLIC_HEALTH: { label: 'Public Health', icon: '🏥', color: 'bg-rose-500' },
   STRAY_ANIMALS: { label: 'Stray Animals', icon: '🐕', color: 'bg-orange-500' },
-  ENCROACHMENT: { label: 'Encroachment', icon: '🏗️', color: 'bg-indigo-500' },
+  ENCROACHMENT: { label: 'Encroachment', icon: '🏗️', color: 'bg-slate-500' },
   OTHER: { label: 'Other Civic Issues', icon: '📋', color: 'bg-slate-500' },
 };
 
@@ -45,8 +45,8 @@ const STATUS_STYLES: Record<string, { label: string; color: string; barColor: st
   SUBMITTED: { label: 'Submitted', color: 'text-teal-700', barColor: 'bg-teal-500' },
   ANALYZING: { label: 'Analyzing', color: 'text-yellow-700', barColor: 'bg-yellow-500' },
   NEEDS_REVIEW: { label: 'Under Review', color: 'text-orange-700', barColor: 'bg-orange-500' },
-  ROUTED: { label: 'Routed', color: 'text-purple-700', barColor: 'bg-purple-500' },
-  ASSIGNED: { label: 'Assigned', color: 'text-indigo-700', barColor: 'bg-indigo-500' },
+  ROUTED: { label: 'Routed', color: 'text-sky-700', barColor: 'bg-sky-500' },
+  ASSIGNED: { label: 'Assigned', color: 'text-cyan-700', barColor: 'bg-cyan-500' },
   IN_PROGRESS: { label: 'In Progress', color: 'text-teal-700', barColor: 'bg-teal-500' },
   RESOLVED: { label: 'Resolved', color: 'text-green-700', barColor: 'bg-green-500' },
   CLOSED: { label: 'Closed', color: 'text-gray-600', barColor: 'bg-gray-400' },
@@ -67,7 +67,7 @@ export default async function StatsPage() {
         <div className="p-16 text-center bg-white border border-gray-200 rounded-xl">
           <div className="text-5xl mb-4">📊</div>
           <p className="text-gray-500 font-medium">Statistics are currently unavailable</p>
-          <p className="text-sm text-gray-400 mt-1">The API may be warming up — please try again in a moment.</p>
+          <p className="text-sm text-gray-400 mt-1">The API may be warming up. Please try again in a moment.</p>
         </div>
       </div>
     );
@@ -89,7 +89,7 @@ export default async function StatsPage() {
 
   // Donut chart segments (CSS conic-gradient)
   const donutSegments: string[] = [];
-  const donutColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#6366f1', '#14b8a6', '#f97316'];
+  const donutColors = ['#3b82f6', '#10b981', '#f59e0b', '#0ea5e9', '#ef4444', '#06b6d4', '#ec4899', '#06b6d4', '#14b8a6', '#f97316'];
   let cumulativePct = 0;
   statusEntries.forEach(([, count], i) => {
     const pct = total > 0 ? (count / total) * 100 : 0;
@@ -118,7 +118,7 @@ export default async function StatsPage() {
           { label: 'Total Submitted', value: total, icon: '📋', bg: 'bg-teal-50 border-teal-200' },
           { label: 'Resolved', value: resolved, icon: '✅', bg: 'bg-green-50 border-green-200' },
           { label: 'In Progress', value: inProgress, icon: '🔧', bg: 'bg-amber-50 border-amber-200' },
-          { label: 'Pending', value: pending > 0 ? pending : 0, icon: '⏳', bg: 'bg-purple-50 border-purple-200' },
+          { label: 'Pending', value: pending > 0 ? pending : 0, icon: '⏳', bg: 'bg-gray-50 border-gray-200' },
           { label: 'Resolution Rate', value: `${resolutionRate}%`, icon: '📈', bg: 'bg-teal-50 border-teal-200' },
         ].map((m) => (
           <div key={m.label} className={`${m.bg} border rounded-xl p-5 text-center`}>

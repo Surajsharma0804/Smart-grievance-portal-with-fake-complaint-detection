@@ -11,7 +11,7 @@ const STEPS = [
     step: '01',
     icon: '📸',
     title: 'Report with Photo & GPS',
-    desc: 'Open the app, snap a photo of the civic issue, and your GPS location is automatically captured. Choose a category — pothole, garbage, broken streetlight — and add an optional description. Your complaint is instantly submitted with a unique tracking ID.',
+    desc: 'Open the app, snap a photo of the civic issue, and your GPS location is automatically captured. Choose a category (pothole, garbage, broken streetlight) and add an optional description. Your complaint is instantly submitted with a unique tracking ID.',
     details: ['Auto GPS pinning with accuracy display', 'Category selection with smart suggestions', 'Anonymous reporting option available', 'Unique public ID for instant tracking'],
   },
   {
@@ -32,7 +32,7 @@ const STEPS = [
     step: '04',
     icon: '👷',
     title: 'Officer Assignment & SLA',
-    desc: 'A field officer is assigned to your complaint with strict SLA deadlines. The clock starts — typically 48 hours for standard issues, less for critical ones. Overdue complaints are automatically escalated to senior officials.',
+    desc: 'A field officer is assigned to your complaint with strict SLA deadlines. The clock starts: typically 48 hours for standard issues, less for critical ones. Overdue complaints are automatically escalated to senior officials.',
     details: ['Automatic officer assignment by ward', 'Configurable SLA per department', 'Multi-level escalation on breach', 'Real-time progress updates'],
   },
   {
@@ -60,7 +60,7 @@ const KEY_FEATURES = [
   {
     icon: '🔍',
     title: 'Duplicate Detection',
-    desc: 'Semantic text similarity and visual hash matching identify when multiple citizens report the same issue — clustering them for faster resolution.',
+    desc: 'Semantic text similarity and visual hash matching identify when multiple citizens report the same issue, clustering them for faster resolution.',
   },
   {
     icon: '⏱️',
@@ -75,7 +75,7 @@ const KEY_FEATURES = [
   {
     icon: '📋',
     title: 'Transparent Timeline',
-    desc: 'Every status change — from submission to closure — is logged with timestamps, officer actions, and notes. Full audit trail for accountability.',
+    desc: 'Every status change, from submission to closure, is logged with timestamps, officer actions, and notes. Full audit trail for accountability.',
   },
   {
     icon: '👍',

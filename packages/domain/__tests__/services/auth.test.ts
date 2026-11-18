@@ -161,10 +161,10 @@ describe('token rotation and reuse detection', () => {
       cfg,
     );
 
-    // Rotate once — firstTokens.refreshToken is now stale
+    // Rotate once - firstTokens.refreshToken is now stale
     await authService.refresh(firstTokens.refreshToken, cfg);
 
-    // Reuse the old token — should detect the reuse and revoke
+    // Reuse the old token - should detect the reuse and revoke
     await expect(
       authService.refresh(firstTokens.refreshToken, cfg),
     ).rejects.toMatchObject({

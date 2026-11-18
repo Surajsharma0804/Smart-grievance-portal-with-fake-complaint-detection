@@ -66,7 +66,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 const STATUS_COLORS: Record<string, string> = {
   OPEN: 'bg-green-100 text-green-800',
   BIDDING: 'bg-teal-100 text-teal-800',
-  AWARDED: 'bg-purple-100 text-purple-800',
+  AWARDED: 'bg-amber-100 text-amber-800',
   IN_PROGRESS: 'bg-teal-100 text-teal-800',
   COMPLETED: 'bg-gray-100 text-gray-800',
 };
@@ -109,7 +109,7 @@ export default async function ContractorsPage() {
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Verified Contractors', value: contractors.length, icon: '👷', color: 'bg-amber-50 border-amber-200' },
-          { label: 'Open Projects', value: projects.filter(p => p.status === 'OPEN' || p.status === 'BIDDING').length, icon: '📋', color: 'bg-blue-50 border-blue-200' },
+          { label: 'Open Projects', value: projects.filter(p => p.status === 'OPEN' || p.status === 'BIDDING').length, icon: '📋', color: 'bg-teal-50 border-teal-200' },
           { label: 'Total Budget', value: formatCurrency(projects.reduce((s, p) => s + (p.estimatedCost || 0), 0)), icon: '💰', color: 'bg-green-50 border-green-200' },
           { label: 'Completed', value: projects.filter(p => p.status === 'COMPLETED').length, icon: '✅', color: 'bg-emerald-50 border-emerald-200' },
         ].map((stat) => (

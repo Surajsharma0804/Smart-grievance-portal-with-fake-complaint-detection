@@ -36,7 +36,7 @@ export function cosineSimilarity(a: number[], b: number[]): number {
 }
 
 /**
- * Stub embedder for testing — returns deterministic random-looking vectors.
+ * Stub embedder for testing - returns deterministic random-looking vectors.
  * Uses a simple seeded approach based on buffer content hash.
  */
 export class StubEmbedder implements ImageEmbedder {

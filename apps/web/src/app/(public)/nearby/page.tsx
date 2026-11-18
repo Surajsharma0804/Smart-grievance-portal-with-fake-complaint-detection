@@ -4,11 +4,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  SUBMITTED: { label: 'Submitted', color: 'bg-blue-100 text-blue-800' },
+  SUBMITTED: { label: 'Submitted', color: 'bg-teal-100 text-teal-800' },
   ANALYZING: { label: 'Analyzing', color: 'bg-yellow-100 text-yellow-800' },
   NEEDS_REVIEW: { label: 'Needs Review', color: 'bg-orange-100 text-orange-800' },
-  ROUTED: { label: 'Routed', color: 'bg-purple-100 text-purple-800' },
-  ASSIGNED: { label: 'Assigned', color: 'bg-indigo-100 text-indigo-800' },
+  ROUTED: { label: 'Routed', color: 'bg-sky-100 text-sky-800' },
+  ASSIGNED: { label: 'Assigned', color: 'bg-cyan-100 text-cyan-800' },
   IN_PROGRESS: { label: 'In Progress', color: 'bg-teal-100 text-teal-800' },
   RESOLVED: { label: 'Resolved', color: 'bg-green-100 text-green-800' },
   CLOSED: { label: 'Closed', color: 'bg-gray-100 text-gray-800' },
@@ -25,7 +25,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 const CATEGORY_COLORS: Record<string, string> = {
   SANITATION: '#16a34a', ROADS: '#d97706', WATER: '#2563eb', ELECTRICITY: '#eab308',
   STREET_LIGHTING: '#f59e0b', TRAFFIC: '#dc2626', PARKS: '#059669',
-  PUBLIC_HEALTH: '#7c3aed', STRAY_ANIMALS: '#a16207', ENCROACHMENT: '#6b7280', OTHER: '#6b7280',
+  PUBLIC_HEALTH: '#e11d48', STRAY_ANIMALS: '#a16207', ENCROACHMENT: '#6b7280', OTHER: '#6b7280',
 };
 
 interface NearbyComplaint {
@@ -305,8 +305,8 @@ export default function NearbyPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2 text-sm font-medium text-green-800">
-                <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse" />
-                📍 GPS Active — {location.address || `${location.lat.toFixed(5)}, ${location.lng.toFixed(5)}`}
+                <span className="w-2.5 h-2.5 bg-green-500 rounded-full" />
+                📍 GPS Active: {location.address || `${location.lat.toFixed(5)}, ${location.lng.toFixed(5)}`}
                 {location.city && <span className="text-green-600">({location.city})</span>}
               </div>
               <p className="text-xs text-green-600 mt-0.5">

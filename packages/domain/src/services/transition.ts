@@ -5,7 +5,7 @@ import type { Types } from 'mongoose';
 
 /**
  * Single authoritative function for complaint state transitions.
- * No route or service should set `status` directly — always go through here.
+ * No route or service should set `status` directly - always go through here.
  */
 export async function transition(
   complaint: IComplaint,

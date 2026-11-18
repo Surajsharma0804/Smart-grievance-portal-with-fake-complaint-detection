@@ -50,7 +50,7 @@ export default async function DepartmentsPage() {
       {departments.length === 0 ? (
         <div className="p-16 text-center bg-white border border-gray-200 rounded-xl">
           <div className="text-4xl mb-4">🏛️</div>
-          <p className="text-gray-500">Department information is currently unavailable. The API may be warming up — try again shortly.</p>
+          <p className="text-gray-500">Department information is currently unavailable. The API may be warming up. Try again shortly.</p>
         </div>
       ) : (
         <DepartmentsList departments={departments} />

@@ -4,11 +4,11 @@ import Link from 'next/link';
 const API_URL = process.env.API_BASE_URL || 'http://localhost:4000';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  SUBMITTED: { label: 'Submitted', color: 'text-teal-700', bg: 'bg-blue-50 border-blue-200', icon: '📝' },
-  ANALYZING: { label: 'AI Analyzing', color: 'text-yellow-700', bg: 'bg-yellow-50 border-yellow-200', icon: '🤖' },
+  SUBMITTED: { label: 'Submitted', color: 'text-teal-700', bg: 'bg-teal-50 border-teal-200', icon: '📝' },
+  ANALYZING: { label: 'Analyzing', color: 'text-yellow-700', bg: 'bg-yellow-50 border-yellow-200', icon: '🤖' },
   NEEDS_REVIEW: { label: 'Under Review', color: 'text-orange-700', bg: 'bg-orange-50 border-orange-200', icon: '🔍' },
-  ROUTED: { label: 'Routed to Dept', color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200', icon: '🏛️' },
-  ASSIGNED: { label: 'Officer Assigned', color: 'text-indigo-700', bg: 'bg-indigo-50 border-indigo-200', icon: '👷' },
+  ROUTED: { label: 'Routed to Dept', color: 'text-sky-700', bg: 'bg-sky-50 border-sky-200', icon: '🏛️' },
+  ASSIGNED: { label: 'Officer Assigned', color: 'text-cyan-700', bg: 'bg-cyan-50 border-cyan-200', icon: '👷' },
   IN_PROGRESS: { label: 'Work in Progress', color: 'text-teal-700', bg: 'bg-teal-50 border-teal-200', icon: '🔧' },
   RESOLVED: { label: 'Resolved', color: 'text-green-700', bg: 'bg-green-50 border-green-200', icon: '✅' },
   CLOSED: { label: 'Closed', color: 'text-gray-600', bg: 'bg-gray-50 border-gray-200', icon: '📁' },
@@ -212,7 +212,7 @@ export default async function MyComplaintsPage() {
                 </div>
 
                 {/* Hover hint */}
-                <div className="absolute bottom-2 right-3 text-[10px] text-gray-300 group-hover:text-blue-500 transition-colors font-medium">
+                <div className="absolute bottom-2 right-3 text-[10px] text-gray-300 group-hover:text-teal-600 transition-colors font-medium">
                   View details →
                 </div>
               </Link>

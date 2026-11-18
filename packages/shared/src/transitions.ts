@@ -2,7 +2,7 @@ import { ComplaintStatus } from './enums';
 
 /**
  * Allowed state transitions for the complaint lifecycle (design.md §8).
- * CLOSED and LINKED_DUPLICATE are terminal — they have no outgoing transitions.
+ * CLOSED and LINKED_DUPLICATE are terminal - they have no outgoing transitions.
  */
 export const TRANSITIONS: Readonly<
   Record<ComplaintStatus, readonly ComplaintStatus[]>
@@ -25,7 +25,7 @@ export const TRANSITIONS: Readonly<
     ComplaintStatus.REOPENED,
   ],
   [ComplaintStatus.REOPENED]: [ComplaintStatus.ASSIGNED],
-  // Terminal states — no transitions out
+  // Terminal states - no transitions out
   [ComplaintStatus.CLOSED]: [],
   [ComplaintStatus.LINKED_DUPLICATE]: [],
 } as const;

@@ -78,7 +78,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
               <h2 className="text-lg font-bold text-gray-900">
                 Your Watch Areas
               </h2>
-              <span className="text-xs bg-blue-50 text-teal-700 px-2.5 py-1 rounded-full font-semibold border border-blue-200">
+              <span className="text-xs bg-teal-50 text-teal-700 px-2.5 py-1 rounded-full font-semibold border border-teal-200">
                 {initialAreas.length}/5
               </span>
             </div>
@@ -107,7 +107,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                           {area.categories.map((c) => (
                             <span
                               key={c}
-                              className="px-2 py-0.5 bg-blue-50 text-teal-700 rounded-full text-[10px] font-medium border border-blue-200"
+                              className="px-2 py-0.5 bg-teal-50 text-teal-700 rounded-full text-[10px] font-medium border border-teal-200"
                             >
                               {c}
                             </span>
@@ -157,7 +157,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                     required
                     maxLength={50}
                     placeholder="e.g. Home, Sector 17, Office"
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-blue-500"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                   />
                   {createState.fieldErrors?.label && (
                     <p className="text-xs text-red-600 mt-1">{createState.fieldErrors.label}</p>
@@ -180,7 +180,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                       <button
                         type="button"
                         onClick={requestLocation}
-                        className="w-full px-4 py-2.5 border-2 border-dashed border-teal-300 rounded-xl text-xs hover:bg-blue-50 font-medium text-teal-700 transition-colors flex items-center justify-center gap-2"
+                        className="w-full px-4 py-2.5 border-2 border-dashed border-teal-300 rounded-xl text-xs hover:bg-teal-50 font-medium text-teal-700 transition-colors flex items-center justify-center gap-2"
                       >
                         📡 Detect My Location
                       </button>
@@ -233,7 +233,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                 <button
                   type="submit"
                   disabled={createPending || !location}
-                  className="w-full py-2.5 bg-teal-700 text-white rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 shadow-lg shadow-blue-500/20 transition-all"
+                  className="w-full py-2.5 bg-teal-700 text-white rounded-lg text-sm font-semibold hover:bg-teal-800 disabled:opacity-50 transition-all"
                 >
                   {createPending ? '⏳ Saving...' : '📍 Save Watch Area'}
                 </button>
@@ -262,7 +262,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
             <form action={prefsAction} className="space-y-5">
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-gray-700 block">Alert Channels</label>
-                <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-colors">
+                <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-teal-50 hover:border-teal-200 transition-colors">
                   <input
                     id="channel_inApp"
                     name="channel_inApp"
@@ -275,7 +275,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
                     <p className="text-[10px] text-gray-400">Get notified inside the portal</p>
                   </div>
                 </label>
-                <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-colors">
+                <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-teal-50 hover:border-teal-200 transition-colors">
                   <input
                     id="channel_email"
                     name="channel_email"
@@ -292,7 +292,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
 
               <div className="space-y-3 pt-4 border-t border-gray-200">
                 <label className="text-sm font-semibold text-gray-700 block">🌙 Quiet Hours</label>
-                <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-colors">
+                <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-teal-50 hover:border-teal-200 transition-colors">
                   <input
                     id="quietHours_enabled"
                     name="quietHours_enabled"
@@ -358,7 +358,7 @@ export function SavedAreasClient({ initialAreas, initialPrefs }: Props) {
             <ul className="space-y-2 text-xs text-gray-600">
               <li className="flex items-start gap-2">
                 <span className="text-teal-600 mt-0.5">•</span>
-                You can save up to 5 watch areas — home, office, school, etc.
+                You can save up to 5 watch areas (home, office, school, etc).
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-teal-600 mt-0.5">•</span>

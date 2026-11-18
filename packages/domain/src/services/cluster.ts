@@ -91,7 +91,7 @@ export async function splitFromCluster(
           to: ComplaintStatus.NEEDS_REVIEW,
           by: complaint.reporterId,
           at: new Date(),
-          note: 'Split from cluster — returned to review',
+          note: 'Split from cluster - returned to review',
         },
       },
     },

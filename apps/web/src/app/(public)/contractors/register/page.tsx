@@ -67,7 +67,7 @@ export default function ContractorRegisterPage() {
     <div className="max-w-2xl mx-auto py-8 space-y-6">
       {/* Header */}
       <div>
-        <Link href="/contractors" className="text-sm text-blue-600 hover:underline mb-3 inline-block">
+        <Link href="/contractors" className="text-sm text-teal-700 hover:underline mb-3 inline-block">
           ← Back to Contractor Portal
         </Link>
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Contractor Registration</h1>

@@ -97,7 +97,7 @@ export function fallbackVlmResult(): VlmResult {
   return {
     category: CategoryCode.OTHER,
     severity: 3,
-    caption: 'Analysis unavailable — provider failure',
+    caption: 'Analysis unavailable - provider failure',
     textImageConsistency: 0.5,
     flags: {
       screenshot: false,

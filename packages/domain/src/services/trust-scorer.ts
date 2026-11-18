@@ -213,7 +213,7 @@ export function computeTrustScore(
         signal: 'CAMERA_BONUS',
         value: true,
         penalty: -10,
-        reason: 'Camera source with fresh GPS within 50m — bonus applied',
+        reason: 'Camera source with fresh GPS within 50m - bonus applied',
       });
     }
   }

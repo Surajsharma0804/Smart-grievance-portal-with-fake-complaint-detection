@@ -66,10 +66,10 @@ export async function routeComplaint(input: RoutingInput): Promise<RoutingResult
   let reviewReason: string | undefined;
 
   if (fromFallback || !vlmResult) {
-    // No VLM result — use citizen category or triage
+    // No VLM result - use citizen category or triage
     category = citizenCat ?? CategoryCode.OTHER;
     needsReview = true;
-    reviewReason = 'AI analysis unavailable — manual categorization required';
+    reviewReason = 'AI analysis unavailable - manual categorization required';
   } else if (citizenCat && aiCat === citizenCat) {
     // Citizen and AI agree
     category = aiCat;
@@ -77,12 +77,12 @@ export async function routeComplaint(input: RoutingInput): Promise<RoutingResult
     // AI is confident
     category = aiCat ?? CategoryCode.OTHER;
   } else if (aiConf < 0.6) {
-    // Low confidence — triage
+    // Low confidence - triage
     category = citizenCat ?? aiCat ?? CategoryCode.OTHER;
     needsReview = true;
-    reviewReason = `Low AI confidence (${aiConf.toFixed(2)}) — needs manual review`;
+    reviewReason = `Low AI confidence (${aiConf.toFixed(2)}) - needs manual review`;
   } else {
-    // Medium confidence but disagrees with citizen — use citizen's choice
+    // Medium confidence but disagrees with citizen - use citizen's choice
     category = citizenCat ?? aiCat ?? CategoryCode.OTHER;
   }
 

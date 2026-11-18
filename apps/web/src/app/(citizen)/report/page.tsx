@@ -286,7 +286,7 @@ export default function ReportPage() {
             name="description"
             rows={4}
             maxLength={2000}
-            placeholder="Provide additional details about the problem — how long it's been there, impact on residents, etc."
+            placeholder="Provide additional details about the problem. How long has it been there? How does it affect residents?"
             className="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
           />
         </div>
@@ -434,7 +434,7 @@ export default function ReportPage() {
                     Detecting your location...
                   </>
                 ) : (
-                  <>📡 Use GPS — Detect My Exact Location</>
+                  <>📡 Use GPS to Detect My Location</>
                 )}
               </button>
 

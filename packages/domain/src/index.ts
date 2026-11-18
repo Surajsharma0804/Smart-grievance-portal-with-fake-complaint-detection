@@ -12,21 +12,21 @@ export { Contractor, type IContractor } from './models/contractor';
 export { Project, type IProject, ProjectStatus } from './models/project';
 export { Bid, type IBid, BidStatus } from './models/bid';
 
-// Services — Auth
+// Services - Auth
 export * as authService from './services/auth';
 export type { TokenPair, AuthConfig, AccessPayload } from './services/auth';
 
-// Services — Storage
+// Services - Storage
 export { LocalDiskDriver, type StorageDriver, type PresignedUrl } from './services/storage';
 
-// Services — Complaint lifecycle
+// Services - Complaint lifecycle
 export { createComplaint, type CreateComplaintOpts } from './services/complaint';
 export { transition } from './services/transition';
 export { findWardForPoint } from './services/ward';
 export { toPublicDTO, toOwnerDTO, PRIVATE_FIELDS, type ComplaintPublicDTO, type ComplaintOwnerDTO } from './services/dto';
 export { seed, seedDemoUsers } from './services/seed';
 
-// Services — Media
+// Services - Media
 export {
   validatePresignRequest,
   generatePresignedUrls,
@@ -39,7 +39,7 @@ export {
   type VerifyResult,
 } from './services/media';
 
-// Services — AI Core
+// Services - AI Core
 export { sha256, pHash, dHash, hammingDistance } from './services/hashing';
 export { extractExif, hasEditingSoftware, EDITING_SOFTWARE, type ExifSummary } from './services/exif';
 export { analyzeELA, type ForensicsResult } from './services/forensics';
